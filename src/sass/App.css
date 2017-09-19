@@ -1,0 +1,83 @@
+h1, h2, h3, p, a {
+  color: #D7263D; }
+
+.hero-h1 {
+  font-size: 10em;
+  margin: 0; }
+
+body {
+  background: #E0E0E2;
+  height: 200em;
+  width: 100%; }
+
+.main {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column; }
+
+header {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  background: #E0E0E2;
+  height: auto;
+  width: 100%; }
+  header h1 {
+    margin: 0 0 0 2em; }
+
+section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%; }
+
+.hero-section {
+  background: url("../images/Bakgrund.jpg");
+  background-size: cover;
+  height: 80vh; }
+
+.sub-hero {
+  background: #EA3C53;
+  height: 30em; }
+
+button {
+  border: none;
+  height: 2em;
+  font-size: 1em;
+  margin: 1em;
+  background: none;
+  border: 0.1em solid #EA3C53;
+  color: #EA3C53; }
+  button:hover {
+    cursor: pointer; }
+
+form {
+  background: #EA3C53;
+  transition: all 1s ease;
+  position: fixed;
+  top: 40%;
+  left: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 1em; }
+  form label {
+    font-size: 1.2em;
+    color: #E0E0E2; }
+  form input {
+    font-size: 2em;
+    margin: 0.3em;
+    border: none;
+    height: 2em;
+    font-size: 1em;
+    margin: 1em;
+    background: #E0E0E2;
+    border: 0.1em solid #E0E0E2;
+    color: #E0E0E2;
+    color: #EA3C53; }
+  form button {
+    background: #E0E0E2; }

@@ -8,8 +8,12 @@ const Register = (props) => {
       formName = 'register'
       name1 = 'username'
       name2 = 'password'
+      name3= 'email'
       button1 = 'Register'
-      onSubmit = {props.onSubmit}/>
+      onSubmit = {props.onSubmit}
+      show = {props.show}
+      cancelButton = {props.cancelButton}
+      />
   );
 }
 

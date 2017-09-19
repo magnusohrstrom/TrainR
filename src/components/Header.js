@@ -3,8 +3,7 @@
 const Header = (props) => {
   return (
     <header>
-      <h1>TrainR</h1>
-
+      {props.user && <h1>TrainR</h1>}
       <nav>
         {props.user && <button onClick={props.signOut}>Sign Out</button>}
       </nav>

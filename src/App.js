@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import './App.css';
+import './sass/App.css';
 import firebase from './firebase';
 import Main from './components/Main';
 
