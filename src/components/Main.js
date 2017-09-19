@@ -22,13 +22,21 @@ export default class Main extends Component {
     //bools to show or hide forms
     register: false,
     signIn: false,
-    errorMessage:'',
-    error:false
+    errorMessage:false,
+    //Training forms
+    running:'',
+    yoga:'',
+    aerobics:'',
+    soccer:'',
+    dance:'',
+    biking:'',
+    hiking:''
+
   }
 
 
   //Input functions
-  onChange = e => this.setState({[e.target.name]:e.target.value});
+  onChange = (e) => { e.target.type === 'checkbox' ? console.log(e.target.value) : this.setState({[e.target.name]:e.target.value})}
 
   onAuthStateChanged = () => {
     auth.onAuthStateChanged((user) => {
@@ -36,7 +44,7 @@ export default class Main extends Component {
       if(user){
         this.setState({
           user:user,
-          error: false
+          errorMessage: false
         });
       }
       else{
@@ -61,7 +69,6 @@ export default class Main extends Component {
       })).then(user => console.log(user))
         .catch((error) => {
           this.setState({
-          error:true,
           errorMessage:error.message
         });
       console.log(error);
@@ -72,7 +79,7 @@ export default class Main extends Component {
   signIn = e => {
     e.preventDefault();
     auth
-    .signInWithEmailAndPassword(this.state.email, this.state.password).then(()=>console.log(this.state.email))
+    .signInWithEmailAndPassword(this.state.email, this.state.password)
     .then(user => this.setState({
       register:false,
       signIn:false
@@ -123,28 +130,34 @@ export default class Main extends Component {
   }
 
   render() {
-    const {user, error, errorMessage, signIn, register} = this.state;
+    const {user, errorMessage, signIn, register} = this.state;
 
     return (
       <div className = "main">
         <Header user={user} signOut = {this.signOut}/>
         <Hero user= {user} register = {register} signIn = {signIn} signInClick = {this.showSignIn} registerClick={this.showRegister}/>
-        {error && <p>{errorMessage}</p>}
+        {errorMessage && <p>{errorMessage}</p>}
         <Register
           show = {this.state.register}
           onChange = {this.onChange}
           onSubmit= {this.onSubmitRegister}
           formName= 'register'
           cancelButton = {this.cancelOnClick}
+          stateName1 = {this.state.username}
+          stateName2 = {this.state.password}
+          stateName3 = {this.state.email}
+
           />
         <Login
           show = {this.state.signIn}
           formName = 'login'
-          onChange = {this.onchange}
+          onChange={this.onChange}
           onSubmit = {this.signIn}
           cancelButton = {this.cancelOnClick}
+          stateName1 = {this.state.email}
+          stateName2 = {this.state.password}
         />
-        <TrainingModule/>
+        {user && <TrainingModule onChange = {this.onChange}/>}
         <Subhero/>
       </div>
     )

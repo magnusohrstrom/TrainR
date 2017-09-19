@@ -52,9 +52,17 @@ section {
   height: 80vh;
 }
 
+.training-module {
+  & form {
+    flex-direction: row;
+    height: 20em;
+  }
+}
+
 .sub-hero  {
   background: $red;
   height: 30em;
+
 }
 
 button {
