@@ -39,9 +39,15 @@ section {
   background-size: cover;
   height: 80vh; }
 
-.training-module form {
-  flex-direction: row;
-  height: 20em; }
+.training-module {
+  width: 10em;
+  background: grey; }
+  .training-module form {
+    width: 10em;
+    flex-direction: column;
+    height: auto;
+    top: 0;
+    position: absolute; }
 
 .sub-hero {
   background: #EA3C53;

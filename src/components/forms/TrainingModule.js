@@ -3,7 +3,7 @@ import React from "react";
 const TrainingModule = (props) => {
   return (
     <section className = "training-module" >
-      <form onSubmit={props.onSubmit} className = "training-form" >
+      <form onSubmit = {props.onSubmit}  className = "training-form" >
         <label htmlFor="running">Running</label>
         <input name="running" type = "checkbox" value = "running" onChange = {props.onChange} />
         <label htmlFor="yoga">Yoga</label>

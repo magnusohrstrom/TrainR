@@ -24,18 +24,31 @@ export default class Main extends Component {
     signIn: false,
     errorMessage:false,
     //Training forms
-    running:'',
+    running:false,
     yoga:'',
-    aerobics:'',
-    soccer:'',
-    dance:'',
-    biking:'',
-    hiking:''
+    aerobics:false,
+    soccer:false,
+    dance:false,
+    biking:false,
+    hiking:false,
+    match:false
+  }
+
+  //Input functions
+  onChange = (e) => {
+    if(e.target.type === 'checkbox' && e.target.checked) {
+        this.setState({
+          [e.target.name]:e.target.checked
+        })
+    }
+    else{
+      this.setState({[e.target.name]:e.target.value});
+    }
   }
 
 
-  //Input functions
-  onChange = (e) => { e.target.type === 'checkbox' ? console.log(e.target.value) : this.setState({[e.target.name]:e.target.value})}
+
+
 
   onAuthStateChanged = () => {
     auth.onAuthStateChanged((user) => {
@@ -52,7 +65,7 @@ export default class Main extends Component {
         else{
           db.ref('users').orderByChild('uid')
             .equalTo(user.uid)
-              .on('value',(snap)=>{
+              .on('value', (snap) => {
             snap.forEach(item => {
               this.setState({
                 username: item.val().username
@@ -68,6 +81,34 @@ export default class Main extends Component {
       }
     });
   }
+///
+
+  onSubmitGo = (e) => {
+    console.log(this.state.hiking);
+    console.log(this.state.running);
+    e.preventDefault();
+    let obj = {
+      running:this.state.running,
+      yoga:this.state.yoga,
+      aerobics:this.state.aerobics,
+      soccer:this.state.soccer,
+      dance:this.state.dance,
+      biking:this.state.biking,
+      hiking:this.state.hiking,
+    }
+    this.checkIfObjectExcist(obj);
+  }
+
+
+
+
+  checkIfObjectExcist = (testobj) => {
+    console.log(testobj);
+    db.ref('matchObjects').orderByChild('')
+  }
+
+
+
 
   onSubmitRegister = e => {
     e.preventDefault();
@@ -92,8 +133,6 @@ export default class Main extends Component {
       console.log(error);
     });
   }
-
-
 
   signIn = e => {
     e.preventDefault();
@@ -209,7 +248,10 @@ export default class Main extends Component {
           stateName2 = {this.state.password}
           signInWithGoogle = {this.signInWithGoogle}
         />
-        {user && <TrainingModule onChange = {this.onChange}/>}
+        {user && <TrainingModule  onSubmit = {this.onSubmitGo} onChange = {this.onChange}/>}
+        {this.state.running && <h1>this.state.running</h1>}
+
+
         <Subhero/>
       </div>
     )
