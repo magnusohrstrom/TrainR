@@ -73,6 +73,7 @@ form {
     font-size: 1.2em;
     color: #E0E0E2; }
   form input {
+    width: 100%;
     font-size: 2em;
     margin: 0.3em;
     border: none;
@@ -84,4 +85,5 @@ form {
     color: #E0E0E2;
     color: #EA3C53; }
   form button {
-    background: #E0E0E2; }
+    background: #E0E0E2;
+    width: 100%; }

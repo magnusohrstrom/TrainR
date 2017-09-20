@@ -13,10 +13,11 @@ const Form = (props) => {
 
       {props.formName === 'register' && <label htmlFor={props.name3} >{props.name3}</label>}
       {props.formName === 'register' && <input name = {props.name3}  type='text' onChange = {props.onChange} placeholder={props.placeholder2} value = {props.stateName3}/>}
-      <div className="button-group">
+
         <input type="submit" value = {props.button1} />
         <button onClick = {props.cancelButton}>Cancel</button>
-      </div>
+        <button onClick ={props.signInWithGoogle}>Sign in with Google</button>
+
     </form>}
     </div>
   );

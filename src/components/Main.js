@@ -31,7 +31,6 @@ export default class Main extends Component {
     dance:'',
     biking:'',
     hiking:''
-
   }
 
 
@@ -40,15 +39,24 @@ export default class Main extends Component {
 
   onAuthStateChanged = () => {
     auth.onAuthStateChanged((user) => {
-
       if(user){
         this.setState({
           user:user,
           errorMessage: false
         });
+        if(user.displayName) {
+          this.setState({
+            username: user.displayName
+          });
+        }
+        else{
+
+        }
       }
-      else{
-        this.setState({user:''});
+      else {
+        this.setState({
+          user:''
+        })
       }
     });
   }
@@ -63,37 +71,72 @@ export default class Main extends Component {
         username: this.state.username
         });
       })
-      .then(()=>this.setState({
+      .then(()=>{
+        this.setState({
         register:false,
         signIn:false
-      })).then(user => console.log(user))
+        })
+      })
         .catch((error) => {
           this.setState({
           errorMessage:error.message
         });
       console.log(error);
     });
-
   }
+
+
 
   signIn = e => {
     e.preventDefault();
     auth
     .signInWithEmailAndPassword(this.state.email, this.state.password)
-    .then(user => this.setState({
+    .then(user => {
+      this.setState({
       register:false,
       signIn:false
-    }))
+    })})
     .catch(error => this.setState({
       error: true,
       errorMessage: error.message
     }));
   }
 
+  signInWithGoogle = () => {
+    let provider = new firebase.auth.GoogleAuthProvider();
+
+    firebase.auth().signInWithPopup(provider).then(function(result) {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      let token = result.credential.accessToken;
+      // The signed-in user info.
+      let user = result.user;
+      // ...
+      db.ref(`users/${user.uid}`).set({
+      email:user.email,
+      uid: user.uid,
+      username: user.displayName
+      });
+    })
+    .catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // The email of the user's account used.
+      var email = error.email;
+      // The firebase.auth.AuthCredential type that was used.
+      var credential = error.credential;
+      // ...
+    });
+  }
+
   signOut = (e) => {
     e.preventDefault();
-    console.log("SIGN OUT!")
-    firebase.auth().signOut();
+    this.setState({
+      username:'',
+      password:'',
+      email:''
+    })
+    auth.signOut();
   }
 
   //Show hide sign-in and register forms.
@@ -134,7 +177,7 @@ export default class Main extends Component {
 
     return (
       <div className = "main">
-        <Header user={user} signOut = {this.signOut}/>
+        <Header user={user} username = {this.state.username} signOut = {this.signOut}/>
         <Hero user= {user} register = {register} signIn = {signIn} signInClick = {this.showSignIn} registerClick={this.showRegister}/>
         {errorMessage && <p>{errorMessage}</p>}
         <Register
@@ -156,6 +199,7 @@ export default class Main extends Component {
           cancelButton = {this.cancelOnClick}
           stateName1 = {this.state.email}
           stateName2 = {this.state.password}
+          signInWithGoogle = {this.signInWithGoogle}
         />
         {user && <TrainingModule onChange = {this.onChange}/>}
         <Subhero/>

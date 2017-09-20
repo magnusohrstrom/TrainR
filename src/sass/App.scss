@@ -103,6 +103,7 @@ form {
   }
 
   & input {
+    width: 100%;
     font-size: 2em;
     margin:0.3em;
     border:none;
@@ -116,5 +117,6 @@ form {
   }
   & button {
     background: $grey;
+    width: 100%;
   }
 }

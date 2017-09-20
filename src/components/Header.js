@@ -5,6 +5,7 @@ const Header = (props) => {
     <header>
       {props.user && <h1>TrainR</h1>}
       <nav>
+        {props.user && <a>{props.username}</a>}
         {props.user && <button onClick={props.signOut}>Sign Out</button>}
       </nav>
     </header>

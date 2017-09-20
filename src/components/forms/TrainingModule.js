@@ -3,7 +3,7 @@ import React from "react";
 const TrainingModule = (props) => {
   return (
     <section className = "training-module" >
-      <form className = "training-form" >
+      <form onSubmit={props.onSubmit} className = "training-form" >
         <label htmlFor="running">Running</label>
         <input name="running" type = "checkbox" value = "running" onChange = {props.onChange} />
         <label htmlFor="yoga">Yoga</label>
@@ -18,7 +18,7 @@ const TrainingModule = (props) => {
         <input name="biking" type = "checkbox" value = "biking" onChange = {props.onChange} />
         <label htmlFor="Hiking">Hiking</label>
         <input name="hiking" type = "checkbox" value = "hiking" onChange = {props.onChange} />
-
+        <input type="submit" value="Go!" />
       </form>
     </section>
   );

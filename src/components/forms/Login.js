@@ -3,7 +3,7 @@ import Form from './Form';
 
 const Login = (props) => {
   return (
-    <Form 
+    <Form
       onChange = {props.onChange}
       formName = {props.formName}
       name1 = 'email'
@@ -14,7 +14,7 @@ const Login = (props) => {
       onSubmit = { props.onSubmit }
       show = {props.show}
       cancelButton = {props.cancelButton}
-
+      signInWithGoogle = {props.signInWithGoogle}
      />
   );
 }
