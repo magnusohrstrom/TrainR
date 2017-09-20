@@ -50,7 +50,15 @@ export default class Main extends Component {
           });
         }
         else{
-
+          db.ref('users').orderByChild('uid')
+            .equalTo(user.uid)
+              .on('value',(snap)=>{
+            snap.forEach(item => {
+              this.setState({
+                username: item.val().username
+              });
+            })
+          });
         }
       }
       else {
