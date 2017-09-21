@@ -18,12 +18,30 @@ set
 
 
 
-
-
+DB
+------
 users {
+  userkey {
+  }
+}
+---
+
+GO
+
+matchObjects {
+  matchObj: {
+    userId: "352bfdsfd",
+    yoga: true,
+    hiking: true
+  }
+
 
 }
 
-matchObjects {
+match :{
+  userId1: "adads",
+  userId2 : "asdadasda2",
+  chatMessages:{
 
+  }
 }

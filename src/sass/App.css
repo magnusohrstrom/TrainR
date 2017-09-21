@@ -1,9 +1,20 @@
-h1, h2, h3, p, a {
-  color: #D7263D; }
+/*------------- Breakpoints mixin*/
+/*------------- Heading mixins*/
+/*------------- Flexbox mixins*/
+/*------------- Flexbox center mixin*/
+/*---------------Mixins for transforms, transitions and animations*/
+/*Mixin for animation on contact page*/
+/*Mixin for hide & show*/
+h1, h2, h3, p, a, button, input {
+  color: #EA3C53;
+  font-family: 'Amiko', sans-serif; }
 
 .hero-h1 {
-  font-size: 10em;
+  font-size: 2em;
   margin: 0; }
+
+html {
+  width: 100%; }
 
 body {
   background: #E0E0E2;
@@ -37,16 +48,16 @@ section {
 .hero-section {
   background: url("../images/Bakgrund.jpg");
   background-size: cover;
-  height: 80vh; }
+  height: 93vh; }
 
 .training-module {
-  width: 10em;
-  background: grey; }
+  width: 100%; }
   .training-module form {
-    width: 10em;
+    width: 100;
     flex-direction: column;
     height: auto;
-    top: 0;
+    top: 10%;
+    left: 0;
     position: absolute; }
 
 .sub-hero {
@@ -55,41 +66,50 @@ section {
 
 button {
   border: none;
-  height: 2em;
+  height: 2.5em;
   font-size: 1em;
   margin: 1em;
   background: none;
   border: 0.1em solid #EA3C53;
-  color: #EA3C53; }
+  color: #EA3C53;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; }
   button:hover {
     cursor: pointer; }
 
 form {
-  background: #EA3C53;
   transition: all 1s ease;
   position: fixed;
-  top: 40%;
-  left: 40%;
+  top: 10%;
+  left: 0%;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: center;
   flex-direction: column;
-  padding: 1em; }
+  width: 100%;
+  height: 90vh; }
   form label {
     font-size: 1.2em;
-    color: #E0E0E2; }
-  form input {
-    width: 100%;
-    font-size: 2em;
-    margin: 0.3em;
-    border: none;
-    height: 2em;
-    font-size: 1em;
-    margin: 1em;
-    background: #E0E0E2;
-    border: 0.1em solid #E0E0E2;
-    color: #E0E0E2;
     color: #EA3C53; }
+  form input {
+    width: 90%;
+    font-size: 2em;
+    margin: 0.5em 0 0.5em 0;
+    border: none;
+    height: 3em;
+    font-size: 1em;
+    background: #EA3C53;
+    border: 0.1em solid #EA3C53;
+    color: #E0E0E2; }
   form button {
-    background: #E0E0E2;
-    width: 100%; }
+    background: #EA3C53;
+    width: 90%;
+    border: 0.1em solid #EA3C53;
+    height: 3em;
+    color: #E0E0E2; }
+
+.form-wrapper {
+  width: 100%;
+  height: 93vh; }

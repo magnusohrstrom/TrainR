@@ -1,20 +1,27 @@
 @import "_varmix";
 //typography
-h1,h2,h3,p,a {
-  color: #D7263D;
+h1, h2, h3, p, a, button, input{
+  color: $red;
+  font-family: 'Amiko', sans-serif;
 }
 
 .hero-h1 {
-  font-size: 10em;
+  font-size: 2em;
   margin:0;
 }
 
 //Main Content
+
+html {
+  width: 100%;
+}
+
 body {
   background: $grey;
   height: 200em;
   width: 100%;
 }
+
 
 .main {
   display: flex;
@@ -49,17 +56,18 @@ section {
 .hero-section {
   background: url('../images/Bakgrund.jpg');
   background-size: cover;
-  height: 80vh;
+  height: 93vh;
 }
 
 .training-module {
-  width:10em;
-  background: grey;
+  width:100%;
+
   & form {
-    width: 10em;
+    width: 100;
     flex-direction: column;
     height: auto;
-    top:0;
+    top:10%;
+    left:0;
     position: absolute;
   }
 }
@@ -72,12 +80,16 @@ section {
 
 button {
   border:none;
-  height: 2em;
+  height: 2.5em;
   font-size: 1em;
   margin: 1em;
   background: none;
-  border: 0.1em solid $red;
+  border:0.1em solid $red;
   color:$red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 
   &:hover {
     cursor:pointer;
@@ -91,37 +103,46 @@ button {
 
 
 form {
-  background: $red;
   transition: all 1s ease;
   position: fixed;
-  top:40%;
-  left:40%;
+  top:10%;
+  left:0%;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: center;
   flex-direction: column;
-  padding: 1em;
+
+  width: 100%;
+  height: 90vh;
 
   & label {
     font-size: 1.2em;
-    color:$grey;
+    color:$red;
   }
 
   & input {
-    width: 100%;
+    width: 90%;
     font-size: 2em;
-    margin:0.3em;
+    margin:0.5em 0 0.5em 0;
     border:none;
-    height: 2em;
+    height: 3em;
     font-size: 1em;
-    margin: 1em;
-    background: $grey;
-    border: 0.1em solid $grey;
+
+    background: $red;
+    border: 0.1em solid $red;
     color:$grey;
-    color:$red;
+
   }
   & button {
-    background: $grey;
-    width: 100%;
+    background: $red;
+    width: 90%;
+    border: 0.1em solid $red;
+    height: 3em;
+    color:$grey;
   }
+}
+
+.form-wrapper {
+  width: 100%;
+  height: 93vh;
 }

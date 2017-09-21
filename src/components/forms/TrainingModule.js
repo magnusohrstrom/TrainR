@@ -5,7 +5,7 @@ const TrainingModule = (props) => {
     <section className = "training-module" >
       <form onSubmit = {props.onSubmit}  className = "training-form" >
         <label htmlFor="running">Running</label>
-        <input name="running" type = "checkbox" value = "running" onChange = {props.onChange} />
+        <input name="running" type = "checkbox" onChange = {props.onChange} />
         <label htmlFor="yoga">Yoga</label>
         <input name="yoga" type = "checkbox" value = "yoga" onChange = {props.onChange} />
         <label htmlFor="aerobics">Aerobics</label>

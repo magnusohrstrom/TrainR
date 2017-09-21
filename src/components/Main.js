@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import firebase from 'firebase';
 import Header from './Header';
-import Form from './forms/Form';
 import Register from './forms/Register';
 import Login from './forms/Login';
 import Hero from './Hero';
@@ -22,10 +21,11 @@ export default class Main extends Component {
     //bools to show or hide forms
     register: false,
     signIn: false,
+    showTrainingModule:true,
     errorMessage:false,
     //Training forms
     running:false,
-    yoga:'',
+    yoga:false,
     aerobics:false,
     soccer:false,
     dance:false,
@@ -36,19 +36,16 @@ export default class Main extends Component {
 
   //Input functions
   onChange = (e) => {
-    if(e.target.type === 'checkbox' && e.target.checked) {
+    if(e.target.type === 'checkbox') {
         this.setState({
           [e.target.name]:e.target.checked
         })
+        console.log(e.target.checked+e.target.name+''+e.target.value);
     }
     else{
       this.setState({[e.target.name]:e.target.value});
     }
   }
-
-
-
-
 
   onAuthStateChanged = () => {
     auth.onAuthStateChanged((user) => {
@@ -84,27 +81,67 @@ export default class Main extends Component {
 ///
 
   onSubmitGo = (e) => {
-    console.log(this.state.hiking);
-    console.log(this.state.running);
     e.preventDefault();
-    let obj = {
-      running:this.state.running,
-      yoga:this.state.yoga,
-      aerobics:this.state.aerobics,
-      soccer:this.state.soccer,
-      dance:this.state.dance,
-      biking:this.state.biking,
-      hiking:this.state.hiking,
-    }
-    this.checkIfObjectExcist(obj);
+    //Create and set matchObject
+    this.setMatchObjects()
+    //Check if matched object exists in db.
+    this.findOtherMatchObj();
+
+    this.setState({
+      showTrainingModule: false
+    })
   }
 
+  setMatchObjects = () => {
+    //running
+    this.state.running ? db.ref(`matchObjects/running/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
+    //yoga
+    this.state.yoga ? db.ref(`matchObjects/yoga/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
+    //Aerobics
+    this.state.aerobics ? db.ref(`matchObjects/aerobics/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
 
+  }
+  createChatRoom = (userId1, userId2) => {
+    db.ref(`chatRoom/${userId1+userId2}`).set({
+      userId1: userId1,
+      userId2: userId2,
+      messages:{}
+    });
+    this.setState({
+      match:true
+    })
+  }
+  //checks categoryobjects after own userid and other user id.
+  findOtherMatchObj = () => {
+    this.state.running ? db.ref(`matchObjects/running`).orderByChild('userId')
+      .equalTo(this.state.user.uid)
+        .on('value', (snap) => {
 
+      if( snap.val() !== null ) {
+        //  console.log(snap.val());
+          db.ref(`matchObjects/running`).orderByChild('userId').on('value', (snap) => {
+            //console.log(snap.val());
+            snap.forEach((item) => {
+            //  console.log(item.val().userId);
+              item.val().userId !== this.state.user.uid ?
+                this.createChatRoom(this.state.user.uid,item.val().userId)
+                  : null;
+            })
 
-  checkIfObjectExcist = (testobj) => {
-    console.log(testobj);
-    db.ref('matchObjects').orderByChild('')
+          })
+      }
+      else {
+        console.log(snap.val());
+      }
+    }) : null;
+    //yoga
+    this.state.yoga ? db.ref(`matchObjects/yoga`).on('value', (snap) => {
+      console.log(snap.val());
+    }) : null;
+    //Aerobics
+    this.state.aerobics ? db.ref(`matchObjects/yoga`).on('value', (snap) => {
+      console.log(snap.val());
+    }) : null;
   }
 
 
@@ -138,7 +175,7 @@ export default class Main extends Component {
     e.preventDefault();
     auth
     .signInWithEmailAndPassword(this.state.email, this.state.password)
-    .then(user => {
+    .then(() => {
       this.setState({
       register:false,
       signIn:false
@@ -163,7 +200,11 @@ export default class Main extends Component {
       uid: user.uid,
       username: user.displayName
       });
-    })
+    }).then(() => {
+      this.setState({
+      register:false,
+      signIn:false
+    })})
     .catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;
@@ -220,11 +261,12 @@ export default class Main extends Component {
   }
 
   render() {
-    const {user, errorMessage, signIn, register} = this.state;
+    const {user, errorMessage, signIn, register, showTrainingModule} = this.state;
 
     return (
       <div className = "main">
         <Header user={user} username = {this.state.username} signOut = {this.signOut}/>
+                {this.state.running && <h1>{this.state.running}</h1>}
         <Hero user= {user} register = {register} signIn = {signIn} signInClick = {this.showSignIn} registerClick={this.showRegister}/>
         {errorMessage && <p>{errorMessage}</p>}
         <Register
@@ -248,8 +290,8 @@ export default class Main extends Component {
           stateName2 = {this.state.password}
           signInWithGoogle = {this.signInWithGoogle}
         />
-        {user && <TrainingModule  onSubmit = {this.onSubmitGo} onChange = {this.onChange}/>}
-        {this.state.running && <h1>this.state.running</h1>}
+        {user && showTrainingModule ? <TrainingModule  onSubmit = {this.onSubmitGo} onChange = {this.onChange}/>:null}
+        {this.state.running && <h1>{this.state.running}</h1>}
 
 
         <Subhero/>
