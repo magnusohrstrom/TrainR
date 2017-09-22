@@ -101,49 +101,110 @@ export default class Main extends Component {
     this.state.aerobics ? db.ref(`matchObjects/aerobics/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
 
   }
-  createChatRoom = (userId1, userId2) => {
+
+  removeUsersFromDb = (user1, user2) => {
+      //delete running
+      db.ref(`matchObjects/running/${user1}`).remove();
+      db.ref(`matchObjects/running/${user2}`).remove();
+      //yoga
+      db.ref(`matchObjects/yoga/${user1}`).remove();
+      db.ref(`matchObjects/yoga/${user2}`).remove();
+      //aerobics
+      db.ref(`matchObjects/aerobics/${user1}`).remove();
+      db.ref(`matchObjects/aerobics/${user2}`).remove();
+      console.log('removing');
+  }
+
+  createChatRoom = (fireRef, userId1, userId2) => {
     db.ref(`chatRoom/${userId1+userId2}`).set({
       userId1: userId1,
       userId2: userId2,
-      messages:{}
+      messages:''
     });
     this.setState({
+      running:false,
+      yoga:false,
+      aerobics:false,
+      soccer:false,
+      dance:false,
+      biking:false,
+      hiking:false,
       match:true
     })
+    console.log('created CHATROOM');
+    this.removeUsersFromDb(userId1, userId2);
+
+
   }
+
+  
+
   //checks categoryobjects after own userid and other user id.
   findOtherMatchObj = () => {
-    this.state.running ? db.ref(`matchObjects/running`).orderByChild('userId')
-      .equalTo(this.state.user.uid)
-        .on('value', (snap) => {
-
-      if( snap.val() !== null ) {
-        //  console.log(snap.val());
-          db.ref(`matchObjects/running`).orderByChild('userId').on('value', (snap) => {
-            //console.log(snap.val());
-            snap.forEach((item) => {
-            //  console.log(item.val().userId);
-              item.val().userId !== this.state.user.uid ?
-                this.createChatRoom(this.state.user.uid,item.val().userId)
-                  : null;
-            })
-
-          })
-      }
+    this.state.running ?
+      db.ref(`matchObjects/running`).orderByChild('userId')
+        .equalTo(this.state.user.uid)
+          .on('value', (snap) => {
+            if( snap.val() !== null ) {
+              db.ref(`matchObjects/running`).orderByChild('userId').once('value', (snap) => {
+                if(Object.keys(snap.val())[1] !== undefined  ){
+                  Object.keys(snap.val())[0] !== this.state.user.uid ?
+                  this.createChatRoom(
+                    'running', this.state.user.uid, Object.keys(snap.val())[0])
+                      : this.createChatRoom('running', this.state.user.uid, Object.keys(snap.val())[1]);
+                }else {
+                  console.log('själv');
+                }
+              })
+            }
       else {
         console.log(snap.val());
       }
     }) : null;
-    //yoga
-    this.state.yoga ? db.ref(`matchObjects/yoga`).on('value', (snap) => {
-      console.log(snap.val());
-    }) : null;
-    //Aerobics
-    this.state.aerobics ? db.ref(`matchObjects/yoga`).on('value', (snap) => {
-      console.log(snap.val());
-    }) : null;
-  }
 
+
+    //yoga
+    this.state.yoga ? db.ref(`matchObjects/yoga`).orderByChild('userId')
+      .equalTo(this.state.user.uid)
+        .on('value', (snap) => {
+          if( snap.val() !== null ) {
+            db.ref(`matchObjects/yoga`).orderByChild('userId').once('value', (snap) => {
+              if(Object.keys(snap.val())[1] !== undefined ){
+                Object.keys(snap.val())[0] !== this.state.user.uid ?
+                this.createChatRoom(
+                  'yoga', this.state.user.uid, Object.keys(snap.val())[0])
+                    : this.createChatRoom('yoga', this.state.user.uid, Object.keys(snap.val())[1]);
+              }else {
+                console.log('själv');
+              }
+            })
+          }
+    else {
+      console.log(snap.val());
+    }
+  }): null;
+    //Aerobics
+    this.state.aerobics ?  db.ref(`matchObjects/yoga`).orderByChild('userId')
+      .equalTo(this.state.user.uid)
+        .on('value', (snap) => {
+          if( snap.val() !== null ) {
+            console.log(snap.val());
+            db.ref(`matchObjects/aerobics`).orderByChild('userId').once('value', (snap) => {
+              if(Object.keys(snap.val())[1] !== undefined  ){
+                Object.keys(snap.val())[0] !== this.state.user.uid ?
+                this.createChatRoom(
+                  'aerobics', this.state.user.uid, Object.keys(snap.val())[0])
+                    : this.createChatRoom('aerobics', this.state.user.uid, Object.keys(snap.val())[1]);
+              }else {
+                console.log('själv');
+              }
+            })
+          }
+          else {
+      console.log(snap.val());
+      }
+    }): null;
+  }
 
 
 
