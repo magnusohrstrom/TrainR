@@ -6,6 +6,8 @@ import Login from './forms/Login';
 import Hero from './Hero';
 import Subhero from './Subhero';
 import TrainingModule from './forms/TrainingModule';
+import Chatroom from './Chatroom';
+import Postcard from './Postcard';
 
 //Short for firebase functions
 const db = firebase.database();
@@ -18,11 +20,15 @@ export default class Main extends Component {
     email:'',
     username:'',
     password:'',
+    connected:false,
+    posts: [],
+    postText:'',
     //bools to show or hide forms
     register: false,
     signIn: false,
     showTrainingModule:true,
     errorMessage:false,
+
     //Training forms
     running:false,
     yoga:false,
@@ -54,6 +60,8 @@ export default class Main extends Component {
           user:user,
           errorMessage: false
         });
+
+
         if(user.displayName) {
           this.setState({
             username: user.displayName
@@ -70,6 +78,9 @@ export default class Main extends Component {
             })
           });
         }
+        this.setConnectedStateWhenMatchIsFound();
+
+
       }
       else {
         this.setState({
@@ -119,8 +130,15 @@ export default class Main extends Component {
     db.ref(`chatRoom/${userId1+userId2}`).set({
       userId1: userId1,
       userId2: userId2,
-      messages:''
+      posts:''
     });
+    db.ref(`users/${userId1}`).update({
+           chatroom: userId1+userId2,
+          })
+          db.ref(`users/${userId2}`).update({
+            chatroom: userId1+userId2,
+          });
+
     this.setState({
       running:false,
       yoga:false,
@@ -133,14 +151,43 @@ export default class Main extends Component {
     })
     console.log('created CHATROOM');
     this.removeUsersFromDb(userId1, userId2);
+  }
 
+  findOtherMatchObjInThisObj = (stateName, refObj, elseFunction) => {
+    this.stateName ? db.ref(`matchObjects/${refObj}`).orderByChild('userId')
+        .equalTo(this.state.user.uid)
+          .on('value', (snap) => {
+            if( snap.val() !== null ) {
+              db.ref(`matchObjects/${refObj}`).orderByChild('userId').once('value', (snap) => {
+                if(Object.keys(snap.val())[1] !== undefined  ){
+
+                  this.setState({
+                    running: false,
+                    yoga: false,
+                    aerobics:false
+                  });
+                  Object.keys(snap.val())[0] !== this.state.user.uid ?
+                  this.createChatRoom(
+                    `${refObj}` , this.state.user.uid, Object.keys(snap.val())[0])
+                      : this.createChatRoom(`${refObj}`, this.state.user.uid, Object.keys(snap.val())[1]);
+                }else {
+                  console.log('själv');
+                }
+              })
+            }
+      else {
+
+      }
+    }):elseFunction;
 
   }
 
-  
-
   //checks categoryobjects after own userid and other user id.
   findOtherMatchObj = () => {
+    this.findRunning()
+  }
+
+  findRunning = () => {
     this.state.running ?
       db.ref(`matchObjects/running`).orderByChild('userId')
         .equalTo(this.state.user.uid)
@@ -160,53 +207,68 @@ export default class Main extends Component {
       else {
         console.log(snap.val());
       }
-    }) : null;
+    }) : this.findYoga();
+  }
 
-
-    //yoga
-    this.state.yoga ? db.ref(`matchObjects/yoga`).orderByChild('userId')
-      .equalTo(this.state.user.uid)
-        .on('value', (snap) => {
-          if( snap.val() !== null ) {
-            db.ref(`matchObjects/yoga`).orderByChild('userId').once('value', (snap) => {
-              if(Object.keys(snap.val())[1] !== undefined ){
-                Object.keys(snap.val())[0] !== this.state.user.uid ?
-                this.createChatRoom(
-                  'yoga', this.state.user.uid, Object.keys(snap.val())[0])
-                    : this.createChatRoom('yoga', this.state.user.uid, Object.keys(snap.val())[1]);
-              }else {
-                console.log('själv');
-              }
-            })
-          }
-    else {
-      console.log(snap.val());
-    }
-  }): null;
-    //Aerobics
-    this.state.aerobics ?  db.ref(`matchObjects/yoga`).orderByChild('userId')
-      .equalTo(this.state.user.uid)
-        .on('value', (snap) => {
-          if( snap.val() !== null ) {
-            console.log(snap.val());
-            db.ref(`matchObjects/aerobics`).orderByChild('userId').once('value', (snap) => {
-              if(Object.keys(snap.val())[1] !== undefined  ){
-                Object.keys(snap.val())[0] !== this.state.user.uid ?
-                this.createChatRoom(
-                  'aerobics', this.state.user.uid, Object.keys(snap.val())[0])
-                    : this.createChatRoom('aerobics', this.state.user.uid, Object.keys(snap.val())[1]);
-              }else {
-                console.log('själv');
-              }
-            })
-          }
-          else {
-      console.log(snap.val());
+  findYoga = () => {
+    this.state.yoga ?
+      db.ref(`matchObjects/yoga`).orderByChild('userId')
+        .equalTo(this.state.user.uid)
+          .on('value', (snap) => {
+            if( snap.val() !== null ) {
+              db.ref(`matchObjects/yoga`).orderByChild('userId').once('value', (snap) => {
+                if(Object.keys(snap.val())[1] !== undefined  ){
+                  Object.keys(snap.val())[0] !== this.state.user.uid ?
+                  this.createChatRoom(
+                    'yoga', this.state.user.uid, Object.keys(snap.val())[0])
+                      : this.createChatRoom('yoga', this.state.user.uid, Object.keys(snap.val())[1]);
+                }else {
+                  console.log('själv');
+                }
+              })
+            }
+      else {
+        console.log(snap.val());
       }
-    }): null;
+    }) : this.findAerobics();
+  }
+
+  findAerobics = () => {
+    this.state.aerobics ?
+      db.ref(`matchObjects/aerobics`).orderByChild('userId')
+        .equalTo(this.state.user.uid)
+          .on('value', (snap) => {
+            if( snap.val() !== null ) {
+              db.ref(`matchObjects/aerobics`).orderByChild('userId').once('value', (snap) => {
+                if(Object.keys(snap.val())[1] !== undefined  ){
+                  Object.keys(snap.val())[0] !== this.state.user.uid ?
+                  this.createChatRoom(
+                    'aerobics', this.state.user.uid, Object.keys(snap.val())[0])
+                      : this.createChatRoom('aerobics', this.state.user.uid, Object.keys(snap.val())[1]);
+                }else {
+                  console.log('själv');
+                }
+              })
+            }
+      else {
+        console.log(snap.val());
+      }
+    }) : console.log('slut');
   }
 
 
+
+
+
+
+  sendPostOnSubmit = (e) => {
+    e.preventDefault();
+    db.ref(`chatRoom/${this.state.connected}/posts`).push({
+      text:this.state.postText,
+      userId: this.state.user.uid,
+      date:123
+    })
+  }
 
   onSubmitRegister = e => {
     e.preventDefault();
@@ -215,7 +277,8 @@ export default class Main extends Component {
         db.ref(`users/${user.uid}`).set({
         email:user.email,
         uid: user.uid,
-        username: this.state.username
+        username: this.state.username,
+        chatroom:''
         });
       })
       .then(()=>{
@@ -259,7 +322,8 @@ export default class Main extends Component {
       db.ref(`users/${user.uid}`).set({
       email:user.email,
       uid: user.uid,
-      username: user.displayName
+      username: user.displayName,
+      chatroom:''
       });
     }).then(() => {
       this.setState({
@@ -283,7 +347,8 @@ export default class Main extends Component {
     this.setState({
       username:'',
       password:'',
-      email:''
+      email:'',
+      connected: false
     })
     auth.signOut();
   }
@@ -315,14 +380,50 @@ export default class Main extends Component {
       signIn:false
     })
   }
+  //Listener for if chatroom prop in db is changed. Then chatroom is "opened"
+  setConnectedStateWhenMatchIsFound = () => {
+    db.ref(`users/${this.state.user.uid}/chatroom`).on('value', (snap) => {
+      console.log(snap.val());
+      this.setState({
+        connected: snap.val()
+      })
+      this.onChildAddedToChatRoom();
+    })
+  }
+
+  onChildAddedToChatRoom = () => {
+     db.ref(`chatRoom/${this.state.connected}/posts`).on('child_added', (snap) => {
+
+        let newPosts = [...this.state.posts];
+        newPosts.push({
+          key: snap.key,
+          text: snap.val()
+        });
+        this.setState({
+          posts: newPosts
+        });
+
+    });
+  }
+
 
 //Runs when component has been mounted.
   componentDidMount(){
     this.onAuthStateChanged();
+    this.onChildAddedToChatRoom();
   }
 
   render() {
-    const {user, errorMessage, signIn, register, showTrainingModule} = this.state;
+    const {user, posts, connected, errorMessage, signIn, register, showTrainingModule} = this.state;
+
+    const renderPosts = [...posts].map((elem) => {
+      let userName = '';
+
+      db.ref(`users/${elem.text.userId}`).once('value', (snap) => {
+        userName = snap.val().username;
+      })
+      return <Postcard postText = {elem.text.text} date = {elem.text.date} username = {userName} />
+    });
 
     return (
       <div className = "main">
@@ -352,9 +453,8 @@ export default class Main extends Component {
           signInWithGoogle = {this.signInWithGoogle}
         />
         {user && showTrainingModule ? <TrainingModule  onSubmit = {this.onSubmitGo} onChange = {this.onChange}/>:null}
-        {this.state.running && <h1>{this.state.running}</h1>}
 
-
+      {connected && <Chatroom renderPosts = {renderPosts} onSubmit = {this.sendPostOnSubmit} onChange  = {this.onChange} name = {connected}/>}
         <Subhero/>
       </div>
     )
