@@ -8,6 +8,7 @@ import Subhero from './Subhero';
 import TrainingModule from './forms/TrainingModule';
 import Chatroom from './Chatroom';
 import Postcard from './Postcard';
+import Loader from './Loader';
 
 //Short for firebase functions
 const db = firebase.database();
@@ -23,11 +24,12 @@ export default class Main extends Component {
     connected:false,
     posts: [],
     postText:'',
-    //bools to show or hide forms
+    //bools to show or hide forms and stuffs
     register: false,
     signIn: false,
     showTrainingModule:true,
     errorMessage:false,
+    loading: false,
 
     //Training forms
     running:false,
@@ -79,8 +81,6 @@ export default class Main extends Component {
           });
         }
         this.setConnectedStateWhenMatchIsFound();
-
-
       }
       else {
         this.setState({
@@ -99,7 +99,8 @@ export default class Main extends Component {
     this.findOtherMatchObj();
 
     this.setState({
-      showTrainingModule: false
+      showTrainingModule: false,
+      loading:true
     })
   }
 
@@ -132,14 +133,17 @@ export default class Main extends Component {
       userId2: userId2,
       posts:''
     });
+
     db.ref(`users/${userId1}`).update({
            chatroom: userId1+userId2,
-          })
-          db.ref(`users/${userId2}`).update({
-            chatroom: userId1+userId2,
-          });
+         });
+
+    db.ref(`users/${userId2}`).update({
+      chatroom: userId1+userId2,
+    });
 
     this.setState({
+      loading:false,
       running:false,
       yoga:false,
       aerobics:false,
@@ -147,11 +151,13 @@ export default class Main extends Component {
       dance:false,
       biking:false,
       hiking:false,
-      match:true
+      posts:[]
     })
     console.log('created CHATROOM');
     this.removeUsersFromDb(userId1, userId2);
   }
+
+  /*
 
   findOtherMatchObjInThisObj = (stateName, refObj, elseFunction) => {
     this.stateName ? db.ref(`matchObjects/${refObj}`).orderByChild('userId')
@@ -181,6 +187,9 @@ export default class Main extends Component {
     }):elseFunction;
 
   }
+  */
+
+
 
   //checks categoryobjects after own userid and other user id.
   findOtherMatchObj = () => {
@@ -256,11 +265,6 @@ export default class Main extends Component {
     }) : console.log('slut');
   }
 
-
-
-
-
-
   sendPostOnSubmit = (e) => {
     e.preventDefault();
     db.ref(`chatRoom/${this.state.connected}/posts`).push({
@@ -312,24 +316,27 @@ export default class Main extends Component {
 
   signInWithGoogle = () => {
     let provider = new firebase.auth.GoogleAuthProvider();
-
+    this.showAndHideLoader();
     firebase.auth().signInWithPopup(provider).then(function(result) {
       // This gives you a Google Access Token. You can use it to access the Google API.
       let token = result.credential.accessToken;
       // The signed-in user info.
       let user = result.user;
       // ...
+      let chatVar;
+
+      db.ref(`users/${user.uid}`).once('value', (snap) => {
+        console.log(snap.val().chatroom+'');
+        chatVar = snap.val().chatroom;
+
+      })
       db.ref(`users/${user.uid}`).set({
       email:user.email,
       uid: user.uid,
       username: user.displayName,
-      chatroom:''
+      chatroom: chatVar
       });
-    }).then(() => {
-      this.setState({
-      register:false,
-      signIn:false
-    })})
+    })
     .catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;
@@ -340,16 +347,45 @@ export default class Main extends Component {
       var credential = error.credential;
       // ...
     });
+    this.setState({
+    register:false,
+    signIn:false,
+    loading:false
+    })
+
+
   }
 
   signOut = (e) => {
+
     e.preventDefault();
     this.setState({
+      user:'',
+      email:'',
       username:'',
       password:'',
-      email:'',
-      connected: false
+      connected:false,
+      posts: [],
+      postText:'',
+      //bools to show or hide forms
+      register: false,
+      signIn: false,
+      showTrainingModule:true,
+      errorMessage:false,
+
+      //Training forms
+      running:false,
+      yoga:false,
+      aerobics:false,
+      soccer:false,
+      dance:false,
+      biking:false,
+      hiking:false,
+      match:false,
+      loading: false
     })
+
+    console.log();
     auth.signOut();
   }
 
@@ -374,12 +410,37 @@ export default class Main extends Component {
     });
   }
 
+  showAndHideLoader = () => {
+    !this.state.loading ? this.setState({
+      loading:true
+    }) : this.setState({
+      loading:false
+    });
+  }
+
   cancelOnClick = () => {
     this.setState({
       register:false,
       signIn:false
     })
   }
+
+  leaveChatOnClick = () => {
+    console.log('leaving chat');
+    db.ref(`users/${this.state.user.uid}`).update(
+      {
+        chatroom: ''
+      }
+    );
+    db.ref(`chatRoom/${this.state.connected}`).remove();
+    //db.ref(`users/${this.state.user.uid}`)
+    this.setState({
+      connected:false,
+      showTrainingModule:true,
+      posts:[]
+    });
+  }
+
   //Listener for if chatroom prop in db is changed. Then chatroom is "opened"
   setConnectedStateWhenMatchIsFound = () => {
     db.ref(`users/${this.state.user.uid}/chatroom`).on('value', (snap) => {
@@ -392,8 +453,9 @@ export default class Main extends Component {
   }
 
   onChildAddedToChatRoom = () => {
-     db.ref(`chatRoom/${this.state.connected}/posts`).on('child_added', (snap) => {
-
+    console.log('running childfunc');
+    db.ref(`chatRoom/${this.state.connected}/posts`).on('child_added', (snap) => {
+      console.log(this.state.posts);
         let newPosts = [...this.state.posts];
         newPosts.push({
           key: snap.key,
@@ -404,17 +466,19 @@ export default class Main extends Component {
         });
 
     });
+    console.log(this.state.connected);
   }
 
 
 //Runs when component has been mounted.
   componentDidMount(){
+
     this.onAuthStateChanged();
-    this.onChildAddedToChatRoom();
+
   }
 
   render() {
-    const {user, posts, connected, errorMessage, signIn, register, showTrainingModule} = this.state;
+    const {user, posts, connected, errorMessage, signIn, register, loading, showTrainingModule} = this.state;
 
     const renderPosts = [...posts].map((elem) => {
       let userName = '';
@@ -427,8 +491,11 @@ export default class Main extends Component {
 
     return (
       <div className = "main">
+
         <Header user={user} username = {this.state.username} signOut = {this.signOut}/>
                 {this.state.running && <h1>{this.state.running}</h1>}
+
+
         <Hero user= {user} register = {register} signIn = {signIn} signInClick = {this.showSignIn} registerClick={this.showRegister}/>
         {errorMessage && <p>{errorMessage}</p>}
         <Register
@@ -452,11 +519,22 @@ export default class Main extends Component {
           stateName2 = {this.state.password}
           signInWithGoogle = {this.signInWithGoogle}
         />
-        {user && showTrainingModule ? <TrainingModule  onSubmit = {this.onSubmitGo} onChange = {this.onChange}/>:null}
 
-      {connected && <Chatroom renderPosts = {renderPosts} onSubmit = {this.sendPostOnSubmit} onChange  = {this.onChange} name = {connected}/>}
-        <Subhero/>
+      {user && !connected && showTrainingModule ? <TrainingModule  onSubmit = {this.onSubmitGo} onChange = {this.onChange}/>:null}
+
+      {connected && <Chatroom leaveChatOnClick = {this.leaveChatOnClick} renderPosts = {renderPosts} onSubmit = {this.sendPostOnSubmit} onChange  = {this.onChange} name = {connected}/>}
+      <Subhero/>
+      {loading && !connected ? <Loader/> : null}
+
       </div>
     )
   }
 }
+
+/*
+<div class="loading-object">
+</div>
+<div class="loading-object">
+</div>
+<div class="loading-object">
+</div>*/

@@ -1,7 +1,8 @@
 @import "_varmix";
+@import "_loader";
 //typography
 h1, h2, h3, p, a, button, input{
-  color: $red;
+  color: black;//$red;
   font-family: 'Amiko', sans-serif;
 }
 
@@ -20,6 +21,7 @@ body {
   background: $grey;
   height: 200em;
   width: 100%;
+  z-index: 1;
 }
 
 
@@ -28,6 +30,7 @@ body {
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
+    z-index: 1;
 }
 
 header {
@@ -51,12 +54,14 @@ section {
   align-items: center;
   flex-direction: column;
   width: 100%;
+    z-index: 1;
 }
 
 .hero-section {
   background: url('../images/Bakgrund.jpg');
   background-size: cover;
   height: 93vh;
+    z-index: 1;
 }
 
 .training-module {
@@ -75,6 +80,7 @@ section {
 .sub-hero  {
   background: $red;
   height: 30em;
+    z-index: 1;
 
 }
 
@@ -111,9 +117,9 @@ form {
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
+    z-index: 1;
 
   width: 100%;
-  height: 90vh;
 
   & label {
     font-size: 1.2em;
@@ -121,6 +127,7 @@ form {
   }
 
   & input {
+      z-index: 1;
     width: 90%;
     font-size: 2em;
     margin:0.5em 0 0.5em 0;
@@ -128,7 +135,7 @@ form {
     height: 3em;
     font-size: 1em;
 
-    background: $red;
+    background: none;
     border: 0.1em solid $red;
     color:$grey;
 
@@ -144,7 +151,15 @@ form {
 
 .form-wrapper {
   width: 100%;
-  height: 93vh;
+
+}
+
+.posts-section {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column-reverse;
+  z-index: 1;
 }
 
 .post-card {
@@ -153,8 +168,125 @@ form {
   padding:1em;
   margin:1em;
   background: white;
+    z-index: 1;
   & h2 {
 
   }
-  
+
+}
+
+.test {
+  height: 2em;
+  width: 40em;
+  background: teal;
+  z-index: 1000;
+}
+
+.chat-form {
+  position: relative;
+}
+
+.loading-container {
+  width: 4em;
+  height: 4em;
+  border-radius: 100%;
+  background: white;
+  position: fixed;
+  top:40%;
+  left:50%;
+  z-index:1000;
+  &.active {
+    display:inline;
+  }
+}
+
+.loading-object {
+  //display: inline-block;
+  z-index: 1050;
+  margin:-1em 0 0 -1em;
+  position: absolute;
+  height: 2em;
+  width: 2em;
+  border:0.2em solid $red;
+  //background: $secondary-color;
+  @include animation(loading,1.5s,forwards,infinite);
+  animation-timing-function: linear;
+  &:nth-child(2){
+    height: 0.8em;
+    width: 0.8em;
+    border:0.2em solid $red;
+    //background: $red;
+    @include animation(loading,1s,forwards,infinite);
+
+  }
+  &:nth-child(3){
+    height: 2em;
+    width: 1em;
+    border:0.2em solid $red;
+    //background: $red;
+    @include animation(loading,2s,forwards,infinite);
+  }
+  &.article:nth-child(1){
+    z-index: 0;
+    height: 23em;
+    width: 23em;
+    animation:none;
+    bottom:10%;
+    left: 0%;
+    border-top: none;
+    border-left:none;
+    border-right: none;
+    //border-bottom: none;
+  }
+
+}
+
+@include keyframe(loading){
+  0%{
+    @include transform(rotate(0deg));
+    top:0;
+    left:0;
+  }
+  25% {
+    @include transform(rotate(200deg));
+    top:0;
+    left:100%;
+  }
+  50% {
+    @include transform(rotate(400deg));
+    top:100%;
+    left:100%;
+  }
+  75% {
+    @include transform(rotate(600deg));
+    left:0;
+    top:100%;
+  }
+  100% {
+    @include transform(rotate(800deg));
+    left:0;
+    top:0;
+  }
+};
+
+.test2 {
+  height: 4em;
+  width: 4em;
+  background: yellow;
+  position: fixed;
+  top: 40%;
+  left: 40%;
+  z-index: 1000;
+}
+
+.test2 {
+  width: 4em;
+  height: 4em;
+  //border-radius: 100%;
+  background: $red;
+  position: fixed;
+  //top:80%;
+  bottom:0%;
+  left:50%;
+  z-index:1000;
 }

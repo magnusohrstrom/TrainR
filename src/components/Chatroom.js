@@ -3,15 +3,17 @@ import React from "react";
 const Chatroom = (props) => {
   return (
     <section className ="chat-room">
-      <h1>ChatBoom</h1>
      <p>{props.name}</p>
-     <form onSubmit = {props.onSubmit}>
+     <form className="chat-form" onSubmit = {props.onSubmit}>
        <label>Message</label>
-       <input name="postText" onChange = {props.onChange} type = "text"/>
+       <input name="postText" onChange = {props.onChange} type = "text" />
        <input type = "submit" value = "send"/>
      </form>
+     <section className="posts-section">
+       { props.renderPosts }
+      <button onClick = {props.leaveChatOnClick}> Leave Chatroom</button>
+     </section>
 
-     {props.renderPosts}
     </section>
   );
 }
