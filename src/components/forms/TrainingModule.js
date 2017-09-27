@@ -3,7 +3,10 @@ import React from "react";
 const TrainingModule = (props) => {
   return (
     <section className = "training-module" >
+      {props.goSubmitIsEmpty && <h3>Please choose a work out-genre to match a buddy with!</h3>}
+      <h2>Choose work-out</h2>
       <form onSubmit = {props.onSubmit}  className = "training-form" >
+
         <label htmlFor="running">Running</label>
         <input name="running" type = "checkbox" onChange = {props.onChange} />
         <label htmlFor="yoga">Yoga</label>
@@ -18,7 +21,7 @@ const TrainingModule = (props) => {
         <input name="biking" type = "checkbox" value = "biking" onChange = {props.onChange} />
         <label htmlFor="Hiking">Hiking</label>
         <input name="hiking" type = "checkbox" value = "hiking" onChange = {props.onChange} />
-        <input type="submit" value="Go!" />
+        <input type="submit" className="input-submit" value="Find buddy!" />
       </form>
     </section>
   );

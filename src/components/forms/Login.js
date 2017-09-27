@@ -10,7 +10,7 @@ const Login = (props) => {
       stateName1 = {props.stateName1}
       name2 = 'password'
       stateName2 = {props.stateName2}
-      button1 = 'Login'
+      button1 = 'Sign In'
       onSubmit = { props.onSubmit }
       show = {props.show}
       cancelButton = {props.cancelButton}

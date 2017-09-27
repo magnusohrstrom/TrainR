@@ -2,10 +2,10 @@ import React from "react";
 
 const Postcard = (props) => {
   return (
-    <div className = 'post-card' >
-      <h2>{props.username}</h2>
+    <div className = { props.myKey === props.elemKey ? 'post-card self-postcard' : "post-card other-postcard" } >
+      <h4>{props.myKey === props.elemKey ? props.username : props.otherusername}</h4>
       <p>{props.postText}</p>
-      <p>{props.date}</p>
+      <h6>{props.date}</h6>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-
+import RedButton from './RedButton';
 const Loader = (props) => {
   return (
 
@@ -10,6 +10,7 @@ const Loader = (props) => {
         </div>
         <div className="loading-object">
         </div>
+      <RedButton className = "cancel-search" onClick = {props.onClick} buttonText = "Cancel Search"/>
       </div>
   );
 }

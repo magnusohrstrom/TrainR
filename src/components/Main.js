@@ -18,8 +18,10 @@ export default class Main extends Component {
 
   state = {
     user:'',
+    otherUserId:'',
     email:'',
     username:'',
+    otherusername:'',
     password:'',
     connected:false,
     posts: [],
@@ -30,6 +32,8 @@ export default class Main extends Component {
     showTrainingModule:true,
     errorMessage:false,
     loading: false,
+    goSubmitIsEmpty:false,
+
 
     //Training forms
     running:false,
@@ -38,8 +42,8 @@ export default class Main extends Component {
     soccer:false,
     dance:false,
     biking:false,
-    hiking:false,
-    match:false
+    hiking:false
+    //match:false
   }
 
   //Input functions
@@ -62,7 +66,6 @@ export default class Main extends Component {
           user:user,
           errorMessage: false
         });
-
 
         if(user.displayName) {
           this.setState({
@@ -91,17 +94,32 @@ export default class Main extends Component {
   }
 ///
 
+
+
   onSubmitGo = (e) => {
     e.preventDefault();
     //Create and set matchObject
-    this.setMatchObjects()
-    //Check if matched object exists in db.
-    this.findOtherMatchObj();
+    if(!this.state.running &&
+        !this.state.yoga &&
+        !this.state.aerobics &&
+        !this.state.soccer &&
+        !this.state.dance &&
+        !this.state.biking &&
+        !this.state.hiking ){
+      this.setState({
+        goSubmitIsEmpty:true
+      });
+    }
+    else{
+        this.setMatchObjects()
+        //Check if matched object exists in db.
+        this.findOtherMatchObj();
 
-    this.setState({
-      showTrainingModule: false,
-      loading:true
-    })
+        this.setState({
+          showTrainingModule: false,
+          loading:true
+        })
+      }
   }
 
   setMatchObjects = () => {
@@ -156,40 +174,6 @@ export default class Main extends Component {
     console.log('created CHATROOM');
     this.removeUsersFromDb(userId1, userId2);
   }
-
-  /*
-
-  findOtherMatchObjInThisObj = (stateName, refObj, elseFunction) => {
-    this.stateName ? db.ref(`matchObjects/${refObj}`).orderByChild('userId')
-        .equalTo(this.state.user.uid)
-          .on('value', (snap) => {
-            if( snap.val() !== null ) {
-              db.ref(`matchObjects/${refObj}`).orderByChild('userId').once('value', (snap) => {
-                if(Object.keys(snap.val())[1] !== undefined  ){
-
-                  this.setState({
-                    running: false,
-                    yoga: false,
-                    aerobics:false
-                  });
-                  Object.keys(snap.val())[0] !== this.state.user.uid ?
-                  this.createChatRoom(
-                    `${refObj}` , this.state.user.uid, Object.keys(snap.val())[0])
-                      : this.createChatRoom(`${refObj}`, this.state.user.uid, Object.keys(snap.val())[1]);
-                }else {
-                  console.log('själv');
-                }
-              })
-            }
-      else {
-
-      }
-    }):elseFunction;
-
-  }
-  */
-
-
 
   //checks categoryobjects after own userid and other user id.
   findOtherMatchObj = () => {
@@ -267,11 +251,21 @@ export default class Main extends Component {
 
   sendPostOnSubmit = (e) => {
     e.preventDefault();
+    let newDate = new Date().toString();
+    console.log(newDate);
     db.ref(`chatRoom/${this.state.connected}/posts`).push({
       text:this.state.postText,
       userId: this.state.user.uid,
-      date:123
-    })
+      date: newDate
+    }).then(()=>{
+      
+    this.setState({
+        postText:''
+      })
+
+
+    });
+
   }
 
   onSubmitRegister = e => {
@@ -361,17 +355,22 @@ export default class Main extends Component {
     e.preventDefault();
     this.setState({
       user:'',
+      otherUserId:'',
       email:'',
       username:'',
+      otherusername:'',
       password:'',
       connected:false,
       posts: [],
       postText:'',
-      //bools to show or hide forms
+      //bools to show or hide forms and stuffs
       register: false,
       signIn: false,
       showTrainingModule:true,
       errorMessage:false,
+      loading: false,
+      goSubmitIsEmpty:false,
+
 
       //Training forms
       running:false,
@@ -380,9 +379,7 @@ export default class Main extends Component {
       soccer:false,
       dance:false,
       biking:false,
-      hiking:false,
-      match:false,
-      loading: false
+      hiking:false
     })
 
     console.log();
@@ -432,23 +429,58 @@ export default class Main extends Component {
         chatroom: ''
       }
     );
+    db.ref(`users/${this.state.otherUserId}`).update(
+      {
+        chatroom: ''
+      }
+    );
     db.ref(`chatRoom/${this.state.connected}`).remove();
     //db.ref(`users/${this.state.user.uid}`)
     this.setState({
       connected:false,
       showTrainingModule:true,
-      posts:[]
+      loading:false,
+      posts:[],
+      otherusername:''
     });
   }
 
+  listenToUserNameForChatRoom = (snap) => {
+
+  }
   //Listener for if chatroom prop in db is changed. Then chatroom is "opened"
   setConnectedStateWhenMatchIsFound = () => {
     db.ref(`users/${this.state.user.uid}/chatroom`).on('value', (snap) => {
       console.log(snap.val());
+      if(snap.val()){
+        db.ref(`chatRoom/${snap.val()}`).once('value', (innerSnap) => {
+
+          if(innerSnap.val().userId1 === this.state.user.uid){
+            db.ref(`users/${innerSnap.val().userId2}`).once('value', (innerSnap2) => {
+              console.log(innerSnap2.val());
+              this.setState({
+                otherusername: innerSnap2.val().username,
+                otherUserId: innerSnap2.val().uid
+
+              })
+            } )
+          }
+          else if (innerSnap.val().userId2 === this.state.user.uid){
+            db.ref(`users/${innerSnap.val().userId1}`).once('value', (innerSnap2) => {
+              this.setState({
+                otherusername: innerSnap2.val().username
+              })
+            })
+
+          }
+      });
+
       this.setState({
         connected: snap.val()
       })
       this.onChildAddedToChatRoom();
+
+      }
     })
   }
 
@@ -469,6 +501,15 @@ export default class Main extends Component {
     console.log(this.state.connected);
   }
 
+  cancelSearch = () =>  {
+    this.removeUsersFromDb(this.state.user.uid);
+    this.setState({
+      loading:false,
+      showTrainingModule:true
+    });
+    console.log('canceling');
+  }
+
 
 //Runs when component has been mounted.
   componentDidMount(){
@@ -478,22 +519,20 @@ export default class Main extends Component {
   }
 
   render() {
-    const {user, posts, connected, errorMessage, signIn, register, loading, showTrainingModule} = this.state;
+    const {user, username, postText, otherusername, posts, connected, errorMessage, signIn, register, loading, showTrainingModule} = this.state;
+
 
     const renderPosts = [...posts].map((elem) => {
-      let userName = '';
 
-      db.ref(`users/${elem.text.userId}`).once('value', (snap) => {
-        userName = snap.val().username;
-      })
-      return <Postcard postText = {elem.text.text} date = {elem.text.date} username = {userName} />
+    return <Postcard stateUsername = {this.state.username} elemKey = {elem.text.userId} myKey = {user.uid} postText = {elem.text.text} date = {elem.text.date} username = {username} otherusername = {otherusername} />
     });
+
+
 
     return (
       <div className = "main">
 
         <Header user={user} username = {this.state.username} signOut = {this.signOut}/>
-                {this.state.running && <h1>{this.state.running}</h1>}
 
 
         <Hero user= {user} register = {register} signIn = {signIn} signInClick = {this.showSignIn} registerClick={this.showRegister}/>
@@ -520,11 +559,12 @@ export default class Main extends Component {
           signInWithGoogle = {this.signInWithGoogle}
         />
 
-      {user && !connected && showTrainingModule ? <TrainingModule  onSubmit = {this.onSubmitGo} onChange = {this.onChange}/>:null}
 
-      {connected && <Chatroom leaveChatOnClick = {this.leaveChatOnClick} renderPosts = {renderPosts} onSubmit = {this.sendPostOnSubmit} onChange  = {this.onChange} name = {connected}/>}
-      <Subhero/>
-      {loading && !connected ? <Loader/> : null}
+      {user && !connected && showTrainingModule ? <TrainingModule goSubmitIsEmpty = {this.state.goSubmitIsEmpty} onSubmit = {this.onSubmitGo} onChange = {this.onChange}/>:null}
+
+      {connected && <Chatroom leaveChatOnClick = {this.leaveChatOnClick} renderPosts = {renderPosts}  onSubmit = {this.sendPostOnSubmit} onChange  = {this.onChange} postText={postText} name = {connected}/>}
+
+      {loading && !connected ? <Loader onClick = {this.cancelSearch}/> : null}
 
       </div>
     )

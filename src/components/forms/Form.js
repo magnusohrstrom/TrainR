@@ -12,7 +12,7 @@ const Form = (props) => {
       <input name ={props.name2} type='password' onChange = {props.onChange} placeholder={props.placeholder2} value = {props.stateName2} />
       {props.formName === 'register' && <label htmlFor={props.name3} >{props.name3}</label>}
       {props.formName === 'register' && <input name = {props.name3}  type='text' onChange = {props.onChange} placeholder={props.placeholder2} value = {props.stateName3}/>}
-      <input type="submit" value = {props.button1} />
+      <input className="input-submit" type="submit" value = {props.button1} />
       <button onClick ={props.signInWithGoogle}>Sign in with Google</button>
       <button onClick = {props.cancelButton}>Cancel</button>
     </form>}

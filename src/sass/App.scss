@@ -2,7 +2,7 @@
 @import "_loader";
 //typography
 h1, h2, h3, p, a, button, input{
-  color: black;//$red;
+  color: $red;
   font-family: 'Amiko', sans-serif;
 }
 
@@ -19,7 +19,7 @@ html {
 
 body {
   background: $grey;
-  height: 200em;
+  height: auto;
   width: 100%;
   z-index: 1;
 }
@@ -30,7 +30,10 @@ body {
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
-    z-index: 1;
+  z-index: 1;
+  background: url('../images/Bakgrund.jpg');
+  background-size: cover;
+  min-height: 50em;
 }
 
 header {
@@ -44,7 +47,15 @@ header {
   width: 100%;
 
   & h1 {
-    margin:0 0 0 2em;
+    margin:0 0 0 1em;
+  }
+
+  & nav {
+    margin-right: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
   }
 }
 
@@ -60,7 +71,7 @@ section {
 .hero-section {
   background: url('../images/Bakgrund.jpg');
   background-size: cover;
-  height: 93vh;
+  height: auto;
     z-index: 1;
 }
 
@@ -71,9 +82,9 @@ section {
     width: 100;
     flex-direction: column;
     height: auto;
-    top:10%;
-    left:0;
-    position: absolute;
+    & input {
+      margin:1em 1em 2em 1em;
+    }
   }
 }
 
@@ -96,7 +107,10 @@ button {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-
+  &.red-button {
+    background:$red;
+    color:white;
+  }
   &:hover {
     cursor:pointer;
   }
@@ -107,12 +121,8 @@ button {
 }
 
 
-
 form {
   transition: all 1s ease;
-  position: fixed;
-  top:10%;
-  left:0%;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -127,22 +137,30 @@ form {
   }
 
   & input {
-      z-index: 1;
+    z-index: 1;
     width: 90%;
+    max-width: 26em;
     font-size: 2em;
     margin:0.5em 0 0.5em 0;
     border:none;
     height: 3em;
     font-size: 1em;
 
-    background: none;
+    background: white;
     border: 0.1em solid $red;
-    color:$grey;
-
+    color:black;
+    &.input-submit {
+      width: auto;
+      padding: 0 1em 0 1em;
+      background: $red;
+      color:white;
+    }
   }
+
   & button {
     background: $red;
     width: 90%;
+    max-width: 26em;
     border: 0.1em solid $red;
     height: 3em;
     color:$grey;
@@ -163,15 +181,27 @@ form {
 }
 
 .post-card {
+  font-size: 0.9em;
   height: auto;
-  width: 90%;
-  padding:1em;
+  width: 80%;
+  max-width: 30em;
+  padding:0 1em;
   margin:1em;
+  word-break: break-all;
   background: white;
     z-index: 1;
-  & h2 {
-
+  & p, h6, h4 {
+    color:grey;
   }
+}
+.self-postcard {
+  background: $red;
+  & h6, h4, p {
+    color:$grey;
+  }
+}
+
+.other-postcard {
 
 }
 
@@ -184,6 +214,7 @@ form {
 
 .chat-form {
   position: relative;
+
 }
 
 .loading-container {
@@ -198,6 +229,14 @@ form {
   &.active {
     display:inline;
   }
+}
+
+.cancel-search {
+  background: $red;
+  color: white;
+  position: fixed;
+  top:60%;
+  left: 40%;
 }
 
 .loading-object {
@@ -268,25 +307,3 @@ form {
     top:0;
   }
 };
-
-.test2 {
-  height: 4em;
-  width: 4em;
-  background: yellow;
-  position: fixed;
-  top: 40%;
-  left: 40%;
-  z-index: 1000;
-}
-
-.test2 {
-  width: 4em;
-  height: 4em;
-  //border-radius: 100%;
-  background: $red;
-  position: fixed;
-  //top:80%;
-  bottom:0%;
-  left:50%;
-  z-index:1000;
-}

@@ -6,7 +6,7 @@
 /*Mixin for animation on contact page*/
 /*Mixin for hide & show*/
 h1, h2, h3, p, a, button, input {
-  color: black;
+  color: #EA3C53;
   font-family: 'Amiko', sans-serif; }
 
 .hero-h1 {
@@ -18,7 +18,7 @@ html {
 
 body {
   background: #E0E0E2;
-  height: 200em;
+  height: auto;
   width: 100%;
   z-index: 1; }
 
@@ -27,7 +27,10 @@ body {
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
-  z-index: 1; }
+  z-index: 1;
+  background: url("../images/Bakgrund.jpg");
+  background-size: cover;
+  min-height: 50em; }
 
 header {
   display: flex;
@@ -38,7 +41,13 @@ header {
   height: auto;
   width: 100%; }
   header h1 {
-    margin: 0 0 0 2em; }
+    margin: 0 0 0 1em; }
+  header nav {
+    margin-right: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center; }
 
 section {
   display: flex;
@@ -51,7 +60,7 @@ section {
 .hero-section {
   background: url("../images/Bakgrund.jpg");
   background-size: cover;
-  height: 93vh;
+  height: auto;
   z-index: 1; }
 
 .training-module {
@@ -59,10 +68,9 @@ section {
   .training-module form {
     width: 100;
     flex-direction: column;
-    height: auto;
-    top: 10%;
-    left: 0;
-    position: absolute; }
+    height: auto; }
+    .training-module form input {
+      margin: 1em 1em 2em 1em; }
 
 .sub-hero {
   background: #EA3C53;
@@ -81,14 +89,14 @@ button {
   justify-content: center;
   align-items: center;
   flex-direction: column; }
+  button.red-button {
+    background: #EA3C53;
+    color: white; }
   button:hover {
     cursor: pointer; }
 
 form {
   transition: all 1s ease;
-  position: fixed;
-  top: 10%;
-  left: 0%;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -101,17 +109,24 @@ form {
   form input {
     z-index: 1;
     width: 90%;
+    max-width: 26em;
     font-size: 2em;
     margin: 0.5em 0 0.5em 0;
     border: none;
     height: 3em;
     font-size: 1em;
-    background: none;
+    background: white;
     border: 0.1em solid #EA3C53;
-    color: #E0E0E2; }
+    color: black; }
+    form input.input-submit {
+      width: auto;
+      padding: 0 1em 0 1em;
+      background: #EA3C53;
+      color: white; }
   form button {
     background: #EA3C53;
     width: 90%;
+    max-width: 26em;
     border: 0.1em solid #EA3C53;
     height: 3em;
     color: #E0E0E2; }
@@ -127,12 +142,22 @@ form {
   z-index: 1; }
 
 .post-card {
+  font-size: 0.9em;
   height: auto;
-  width: 90%;
-  padding: 1em;
+  width: 80%;
+  max-width: 30em;
+  padding: 0 1em;
   margin: 1em;
+  word-break: break-all;
   background: white;
   z-index: 1; }
+  .post-card p, .post-card h6, .post-card h4 {
+    color: grey; }
+
+.self-postcard {
+  background: #EA3C53; }
+  .self-postcard h6, .self-postcard h4, .self-postcard p {
+    color: #E0E0E2; }
 
 .test {
   height: 2em;
@@ -154,6 +179,13 @@ form {
   z-index: 1000; }
   .loading-container.active {
     display: inline; }
+
+.cancel-search {
+  background: #EA3C53;
+  color: white;
+  position: fixed;
+  top: 60%;
+  left: 40%; }
 
 .loading-object {
   z-index: 1050;
@@ -454,21 +486,3 @@ form {
     transform: rotate(800deg);
     left: 0;
     top: 0; } }
-
-.test2 {
-  height: 4em;
-  width: 4em;
-  background: yellow;
-  position: fixed;
-  top: 40%;
-  left: 40%;
-  z-index: 1000; }
-
-.test2 {
-  width: 4em;
-  height: 4em;
-  background: #EA3C53;
-  position: fixed;
-  bottom: 0%;
-  left: 50%;
-  z-index: 1000; }
