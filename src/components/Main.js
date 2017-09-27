@@ -187,13 +187,15 @@ export default class Main extends Component {
           .on('value', (snap) => {
             if( snap.val() !== null ) {
               db.ref(`matchObjects/running`).orderByChild('userId').once('value', (snap) => {
-                if(Object.keys(snap.val())[1] !== undefined  ){
-                  Object.keys(snap.val())[0] !== this.state.user.uid ?
-                  this.createChatRoom(
-                    'running', this.state.user.uid, Object.keys(snap.val())[0])
-                      : this.createChatRoom('running', this.state.user.uid, Object.keys(snap.val())[1]);
-                }else {
-                  console.log('själv');
+                if(snap.val()!== null ){
+                  if(Object.keys(snap.val())[1] !== undefined  ){
+                    Object.keys(snap.val())[0] !== this.state.user.uid ?
+                    this.createChatRoom(
+                      'running', this.state.user.uid, Object.keys(snap.val())[0])
+                        : this.createChatRoom('running', this.state.user.uid, Object.keys(snap.val())[1]);
+                  }else {
+                    console.log('själv');
+                  }
                 }
               })
             }
@@ -210,13 +212,15 @@ export default class Main extends Component {
           .on('value', (snap) => {
             if( snap.val() !== null ) {
               db.ref(`matchObjects/yoga`).orderByChild('userId').once('value', (snap) => {
-                if(Object.keys(snap.val())[1] !== undefined  ){
-                  Object.keys(snap.val())[0] !== this.state.user.uid ?
-                  this.createChatRoom(
-                    'yoga', this.state.user.uid, Object.keys(snap.val())[0])
-                      : this.createChatRoom('yoga', this.state.user.uid, Object.keys(snap.val())[1]);
-                }else {
-                  console.log('själv');
+                if(snap.val()!==null){
+                  if(Object.keys(snap.val())[1] !== undefined  ){
+                    Object.keys(snap.val())[0] !== this.state.user.uid ?
+                    this.createChatRoom(
+                      'yoga', this.state.user.uid, Object.keys(snap.val())[0])
+                        : this.createChatRoom('yoga', this.state.user.uid, Object.keys(snap.val())[1]);
+                  }else {
+                    console.log('själv');
+                  }
                 }
               })
             }
@@ -233,6 +237,7 @@ export default class Main extends Component {
           .on('value', (snap) => {
             if( snap.val() !== null ) {
               db.ref(`matchObjects/aerobics`).orderByChild('userId').once('value', (snap) => {
+              if (snap.val()!==null) {
                 if(Object.keys(snap.val())[1] !== undefined  ){
                   Object.keys(snap.val())[0] !== this.state.user.uid ?
                   this.createChatRoom(
@@ -241,6 +246,8 @@ export default class Main extends Component {
                 }else {
                   console.log('själv');
                 }
+              }
+
               })
             }
       else {
@@ -258,7 +265,7 @@ export default class Main extends Component {
       userId: this.state.user.uid,
       date: newDate
     }).then(()=>{
-      
+
     this.setState({
         postText:''
       })
@@ -454,7 +461,7 @@ export default class Main extends Component {
       console.log(snap.val());
       if(snap.val()){
         db.ref(`chatRoom/${snap.val()}`).once('value', (innerSnap) => {
-
+        if(innerSnap.val()){
           if(innerSnap.val().userId1 === this.state.user.uid){
             db.ref(`users/${innerSnap.val().userId2}`).once('value', (innerSnap2) => {
               console.log(innerSnap2.val());
@@ -473,6 +480,8 @@ export default class Main extends Component {
             })
 
           }
+        }
+
       });
 
       this.setState({
