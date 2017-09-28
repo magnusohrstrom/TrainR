@@ -87,6 +87,13 @@ section {
   z-index: 1;
   margin-top: 3em; }
 
+.loader-section {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: column;
+  height: 60vh; }
+
 .training-module {
   width: 100%; }
   .training-module .training-input-wrapper {
@@ -257,6 +264,10 @@ form {
 .chat-form {
   position: relative; }
 
+.cancel-search {
+  background: #EA3C53;
+  color: white; }
+
 .loading-container {
   width: 4em;
   height: 4em;
@@ -264,17 +275,10 @@ form {
   background: white;
   position: fixed;
   top: 40%;
-  left: 50%;
+  left: 45%;
   z-index: 1000; }
   .loading-container.active {
     display: inline; }
-
-.cancel-search {
-  background: #EA3C53;
-  color: white;
-  position: fixed;
-  top: 60%;
-  left: 40%; }
 
 .loading-object {
   z-index: 1050;

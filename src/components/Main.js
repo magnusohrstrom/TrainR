@@ -35,6 +35,7 @@ export default class Main extends Component {
     loading: false,
     goSubmitIsEmpty:false,
     usernameIsEmpty:false,
+    matchGenre:'',
 
 
     //Training forms
@@ -159,6 +160,7 @@ export default class Main extends Component {
     db.ref(`chatRoom/${userId1+userId2}`).set({
       userId1: userId1,
       userId2: userId2,
+      matchGenre: fireRef,
       posts:''
     });
     db.ref(`users/${userId1}`).update({
@@ -264,6 +266,9 @@ export default class Main extends Component {
       if(snap.val()){
         db.ref(`chatRoom/${snap.val()}`).once('value', (innerSnap) => {
         if(innerSnap.val()){
+          this.setState({
+            matchGenre: innerSnap.val().matchGenre
+          });
           if(innerSnap.val().userId1 === this.state.user.uid){
             db.ref(`users/${innerSnap.val().userId2}`).once('value', (innerSnap2) => {
 
@@ -427,6 +432,7 @@ export default class Main extends Component {
       errorMessage:false,
       loading: false,
       goSubmitIsEmpty:false,
+      usernameIsEmpty:false,
 
       //Training forms
       running:false,
@@ -486,7 +492,7 @@ export default class Main extends Component {
   }
 
   render() {
-    const {user, username, usernameIsEmpty, postText, otherusername, posts, connected, errorMessage, signIn, register, loading, showTrainingModule} = this.state;
+    const {user, username, usernameIsEmpty, postText, matchGenre, otherusername, posts, connected, errorMessage, signIn, register, loading, showTrainingModule} = this.state;
 
 
     const renderPosts = [...posts].map((elem, index) => {
@@ -530,7 +536,7 @@ export default class Main extends Component {
 
       {user && !connected && showTrainingModule ? <TrainingModule goSubmitIsEmpty = {this.state.goSubmitIsEmpty} onSubmit = {this.onSubmitGo} onChange = {this.onChange}/>:null}
 
-      {connected && <Chatroom leaveChatOnClick = {this.leaveChatOnClick} renderPosts = {renderPosts}  onSubmit = {this.sendPostOnSubmit} onChange  = {this.onChange} postText={postText} name = {connected}/>}
+      {connected && <Chatroom matchGenre= {matchGenre} otherusername={otherusername} leaveChatOnClick = {this.leaveChatOnClick} renderPosts = {renderPosts}  onSubmit = {this.sendPostOnSubmit} onChange  = {this.onChange} postText={postText} name = {connected}/>}
 
       {loading && !connected ? <Loader onClick = {this.cancelSearch}/> : null}
       <Footer/>
