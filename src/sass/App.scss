@@ -7,8 +7,9 @@ h1, h2, h3, p, a, button, input{
 }
 
 .hero-h1 {
-  font-size: 2em;
+  font-size: 10em;
   margin:0;
+
 }
 
 //Main Content
@@ -78,7 +79,13 @@ section {
 .training-module {
   width:100%;
 
+
   & form {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
     width: 100;
     flex-direction: column;
     height: auto;
@@ -87,6 +94,47 @@ section {
     }
   }
 }
+
+input[type="checkbox"]{
+  border-radius: 100%;
+  background:black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  & span {
+    position: relative;
+  }
+}
+
+
+.training-form {
+
+  width: 90%;
+  max-width: 40em;
+  & div {
+    background: $red;
+    margin:1em;
+    padding:1em;
+    width: 6em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    & label {
+      color:$grey;
+    }
+    &.training-checkbox input{
+      border-radius: 100%;
+      background:black;
+      width: 5em;
+    }
+    & input {
+
+    }
+  }
+}
+
 
 .sub-hero  {
   background: $red;

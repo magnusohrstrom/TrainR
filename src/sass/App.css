@@ -10,7 +10,7 @@ h1, h2, h3, p, a, button, input {
   font-family: 'Amiko', sans-serif; }
 
 .hero-h1 {
-  font-size: 2em;
+  font-size: 10em;
   margin: 0; }
 
 html {
@@ -66,11 +66,45 @@ section {
 .training-module {
   width: 100%; }
   .training-module form {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
     width: 100;
     flex-direction: column;
     height: auto; }
     .training-module form input {
       margin: 1em 1em 2em 1em; }
+
+input[type="checkbox"] {
+  border-radius: 100%;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; }
+  input[type="checkbox"] span {
+    position: relative; }
+
+.training-form {
+  width: 90%;
+  max-width: 40em; }
+  .training-form div {
+    background: #EA3C53;
+    margin: 1em;
+    padding: 1em;
+    width: 6em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; }
+    .training-form div label {
+      color: #E0E0E2; }
+    .training-form div.training-checkbox input {
+      border-radius: 100%;
+      background: black;
+      width: 5em; }
 
 .sub-hero {
   background: #EA3C53;
