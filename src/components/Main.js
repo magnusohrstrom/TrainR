@@ -9,6 +9,7 @@ import TrainingModule from './forms/TrainingModule';
 import Chatroom from './Chatroom';
 import Postcard from './Postcard';
 import Loader from './Loader';
+import Footer from './Footer';
 
 //Short for firebase functions
 const db = firebase.database();
@@ -33,6 +34,7 @@ export default class Main extends Component {
     errorMessage:false,
     loading: false,
     goSubmitIsEmpty:false,
+    usernameIsEmpty:false,
 
 
     //Training forms
@@ -46,19 +48,19 @@ export default class Main extends Component {
     //match:false
   }
 
-  //Input functions
+  //Input functions-----------------------------------------
+  //Sets states to inputvalues
   onChange = (e) => {
     if(e.target.type === 'checkbox') {
         this.setState({
           [e.target.name]:e.target.checked
         })
-        console.log(e.target.checked+e.target.name+''+e.target.value);
     }
     else{
       this.setState({[e.target.name]:e.target.value});
     }
   }
-
+  //handles auth() function from firebase.auth
   onAuthStateChanged = () => {
     auth.onAuthStateChanged((user) => {
       if(user){
@@ -95,7 +97,7 @@ export default class Main extends Component {
 ///
 
 
-
+  //Submit function for training-module that runs search for other match.
   onSubmitGo = (e) => {
     e.preventDefault();
     //Create and set matchObject
@@ -114,20 +116,18 @@ export default class Main extends Component {
         this.setMatchObjects()
         //Check if matched object exists in db.
         this.findOtherMatchObj();
-
         this.setState({
           showTrainingModule: false,
           loading:true
         })
       }
   }
-
+  //sets User in training-genre in db.
   setUserInMatchObject = (stateName, dbName) => {
-    console.log(this.state.stateName);
     stateName ? db.ref(`matchObjects/${dbName}/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
   }
+  //sets user in db for every different genre like above.
   setMatchObjects = () => {
-
     this.setUserInMatchObject(this.state.running, 'running');
     this.setUserInMatchObject(this.state.yoga, 'yoga');
     this.setUserInMatchObject(this.state.aerobics, 'aerobics');
@@ -135,28 +135,8 @@ export default class Main extends Component {
     this.setUserInMatchObject(this.state.dance, 'dance');
     this.setUserInMatchObject(this.state.biking, 'biking');
     this.setUserInMatchObject(this.state.hiking, 'hiking');
-
-    //running
-
-    /*
-
-    this.state.running ? db.ref(`matchObjects/running/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
-    //yoga
-    this.state.yoga ? db.ref(`matchObjects/yoga/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
-    //Aerobics
-    this.state.aerobics ? db.ref(`matchObjects/aerobics/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
-    this.state.soccer ? db.ref(`matchObjects/soccer/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
-    this.state.dance ? db.ref(`matchObjects/dance/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
-    this.state.biking ? db.ref(`matchObjects/biking/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
-    this.state.hiking ? db.ref(`matchObjects/hiking/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
-
-
-    */
-
-
-
   }
-
+  //removes both matched users from db.
   removeUser = (user1, user2, dbName) => {
     db.ref(`matchObjects/${dbName}/${user1}`).remove();
     db.ref(`matchObjects/${dbName}/${user2}`).remove();
@@ -174,21 +154,19 @@ export default class Main extends Component {
 
   }
 
+  //creates chatroom when match is found.
   createChatRoom = (fireRef, userId1, userId2) => {
     db.ref(`chatRoom/${userId1+userId2}`).set({
       userId1: userId1,
       userId2: userId2,
       posts:''
     });
-
     db.ref(`users/${userId1}`).update({
            chatroom: userId1+userId2,
          });
-
     db.ref(`users/${userId2}`).update({
       chatroom: userId1+userId2,
     });
-
     this.setState({
       loading:false,
       running:false,
@@ -200,11 +178,10 @@ export default class Main extends Component {
       hiking:false,
       posts:[]
     })
-    console.log('created CHATROOM');
     this.removeUsersFromDb(userId1, userId2);
   }
 
-  //checks categoryobjects after own userid and other user id.
+
   findOtherMatchObj = () => {
 
     this.setOtherMatchIfOtherUserIsFound('running');
@@ -215,7 +192,7 @@ export default class Main extends Component {
     this.setOtherMatchIfOtherUserIsFound('biking');
     this.setOtherMatchIfOtherUserIsFound('hiking');
   }
-
+  //checks categoryobjects after own userid and other user id.
   setOtherMatchIfOtherUserIsFound = (stateName) => {
 
       db.ref(`matchObjects/${stateName}`).orderByChild('userId')
@@ -229,8 +206,6 @@ export default class Main extends Component {
                     this.createChatRoom(
                       `${stateName}`, this.state.user.uid, Object.keys(snap.val())[0])
                         : this.createChatRoom(`${stateName}`, this.state.user.uid, Object.keys(snap.val())[1]);
-                  }else {
-                    console.log('själv');
                   }
                 }
               })
@@ -238,112 +213,120 @@ export default class Main extends Component {
     });
   }
 
-
-  /*
-  //checks categoryobjects after own userid and other user id.
-  findOtherMatchObj = () => {
-    this.findRunning()
-  }
-
-  findRunning = () => {
-    this.state.running ?
-      db.ref(`matchObjects/running`).orderByChild('userId')
-        .equalTo(this.state.user.uid)
-          .on('value', (snap) => {
-            if( snap.val() !== null ) {
-              db.ref(`matchObjects/running`).orderByChild('userId').once('value', (snap) => {
-                if(snap.val()!== null ){
-                  if(Object.keys(snap.val())[1] !== undefined  ){
-                    Object.keys(snap.val())[0] !== this.state.user.uid ?
-                    this.createChatRoom(
-                      'running', this.state.user.uid, Object.keys(snap.val())[0])
-                        : this.createChatRoom('running', this.state.user.uid, Object.keys(snap.val())[1]);
-                  }else {
-                    console.log('själv');
-                  }
-                }
-              })
-            }
-      else {
-        console.log(snap.val());
-      }
-    }) : this.findYoga();
-  }
-
-  findYoga = () => {
-    this.state.yoga ?
-      db.ref(`matchObjects/yoga`).orderByChild('userId')
-        .equalTo(this.state.user.uid)
-          .on('value', (snap) => {
-            if( snap.val() !== null ) {
-              db.ref(`matchObjects/yoga`).orderByChild('userId').once('value', (snap) => {
-                if(snap.val()!==null){
-                  if(Object.keys(snap.val())[1] !== undefined  ){
-                    Object.keys(snap.val())[0] !== this.state.user.uid ?
-                    this.createChatRoom(
-                      'yoga', this.state.user.uid, Object.keys(snap.val())[0])
-                        : this.createChatRoom('yoga', this.state.user.uid, Object.keys(snap.val())[1]);
-                  }else {
-                    console.log('själv');
-                  }
-                }
-              })
-            }
-      else {
-        console.log(snap.val());
-      }
-    }) : this.findAerobics();
-  }
-
-  findAerobics = () => {
-    this.state.aerobics ?
-      db.ref(`matchObjects/aerobics`).orderByChild('userId')
-        .equalTo(this.state.user.uid)
-          .on('value', (snap) => {
-            if( snap.val() !== null ) {
-              db.ref(`matchObjects/aerobics`).orderByChild('userId').once('value', (snap) => {
-              if (snap.val()!==null) {
-                if(Object.keys(snap.val())[1] !== undefined  ){
-                  Object.keys(snap.val())[0] !== this.state.user.uid ?
-                  this.createChatRoom(
-                    'aerobics', this.state.user.uid, Object.keys(snap.val())[0])
-                      : this.createChatRoom('aerobics', this.state.user.uid, Object.keys(snap.val())[1]);
-                }else {
-                  console.log('själv');
-                }
-              }
-
-              })
-            }
-      else {
-        console.log(snap.val());
-      }
-    }) : console.log('slut');
-  }
-  */
-
-
+  //Pushes post to db from input in chatroom
   sendPostOnSubmit = (e) => {
     e.preventDefault();
     let newDate = new Date().toString();
-    console.log(newDate);
     db.ref(`chatRoom/${this.state.connected}/posts`).push({
       text:this.state.postText,
       userId: this.state.user.uid,
       date: newDate
     }).then(()=>{
-
-    this.setState({
-        postText:''
-      })
-
-
-    });
-
+        this.setState({
+            postText:''
+          })
+      });
   }
 
+  //Leaves chat and updates users property chatroom to ''.
+  leaveChatOnClick = () => {
+    db.ref(`users/${this.state.user.uid}`).update(
+      {
+        chatroom: ''
+      }
+    );
+    db.ref(`users/${this.state.otherUserId}`).update(
+      {
+        chatroom: ''
+      }
+    );
+    db.ref(`chatRoom/${this.state.connected}`).remove();
+    //db.ref(`users/${this.state.user.uid}`)
+    this.setState({
+      connected:false,
+      showTrainingModule:true,
+      loading:false,
+      posts:[],
+      otherusername:'',
+      running:false,
+      yoga:false,
+      aerobics:false,
+      soccer:false,
+      dance:false,
+      biking:false,
+      hiking:false
+    });
+  }
+
+  //Listener for if chatroom prop in db is changed. Then chatroom is "opened"
+  setConnectedStateWhenMatchIsFound = () => {
+    db.ref(`users/${this.state.user.uid}/chatroom`).on('value', (snap) => {
+      if(snap.val()){
+        db.ref(`chatRoom/${snap.val()}`).once('value', (innerSnap) => {
+        if(innerSnap.val()){
+          if(innerSnap.val().userId1 === this.state.user.uid){
+            db.ref(`users/${innerSnap.val().userId2}`).once('value', (innerSnap2) => {
+
+              this.setState({
+                otherusername: innerSnap2.val().username,
+                otherUserId: innerSnap2.val().uid
+
+              })
+            } )
+          }
+          else if (innerSnap.val().userId2 === this.state.user.uid){
+            db.ref(`users/${innerSnap.val().userId1}`).once('value', (innerSnap2) => {
+              this.setState({
+                otherusername: innerSnap2.val().username
+              })
+            })
+          }
+        }
+      });
+      this.setState({
+        connected: snap.val()
+      })
+      this.onChildAddedToChatRoom();
+      }
+    })
+  }
+
+  onChildAddedToChatRoom = () => {
+    db.ref(`chatRoom/${this.state.connected}/posts`).on('child_added', (snap) => {
+        let newPosts = [...this.state.posts];
+        newPosts.push({
+          key: snap.key,
+          text: snap.val()
+        });
+        this.setState({
+          posts: newPosts
+        });
+    });
+  }
+
+  cancelSearch = () =>  {
+    this.removeUsersFromDb(this.state.user.uid);
+    this.setState({
+      loading:false,
+      showTrainingModule:true,
+      running:false,
+      yoga:false,
+      aerobics:false,
+      soccer:false,
+      dance:false,
+      biking:false,
+      hiking:false
+
+    });
+  }
+
+
+
+
+  // Sign in functions---------------------------------------------------
   onSubmitRegister = e => {
     e.preventDefault();
+    this.state.username ?
     auth.createUserWithEmailAndPassword(this.state.email,this.state.password)
       .then((user)=>{
         db.ref(`users/${user.uid}`).set({
@@ -364,6 +347,8 @@ export default class Main extends Component {
           errorMessage:error.message
         });
       console.log(error);
+    }):this.setState({
+      usernameIsEmpty:true
     });
   }
 
@@ -452,8 +437,6 @@ export default class Main extends Component {
       biking:false,
       hiking:false
     })
-
-    console.log();
     auth.signOut();
   }
 
@@ -489,115 +472,11 @@ export default class Main extends Component {
   cancelOnClick = () => {
     this.setState({
       register:false,
-      signIn:false
+      signIn:false,
+      errorMessage:'',
+      usernameIsEmpty:false
     })
   }
-
-  leaveChatOnClick = () => {
-    console.log('leaving chat');
-    db.ref(`users/${this.state.user.uid}`).update(
-      {
-        chatroom: ''
-      }
-    );
-    db.ref(`users/${this.state.otherUserId}`).update(
-      {
-        chatroom: ''
-      }
-    );
-    db.ref(`chatRoom/${this.state.connected}`).remove();
-    //db.ref(`users/${this.state.user.uid}`)
-    this.setState({
-      connected:false,
-      showTrainingModule:true,
-      loading:false,
-      posts:[],
-      otherusername:'',
-      running:false,
-      yoga:false,
-      aerobics:false,
-      soccer:false,
-      dance:false,
-      biking:false,
-      hiking:false
-    });
-  }
-
-  listenToUserNameForChatRoom = (snap) => {
-
-  }
-  //Listener for if chatroom prop in db is changed. Then chatroom is "opened"
-  setConnectedStateWhenMatchIsFound = () => {
-    db.ref(`users/${this.state.user.uid}/chatroom`).on('value', (snap) => {
-      console.log(snap.val());
-      if(snap.val()){
-        db.ref(`chatRoom/${snap.val()}`).once('value', (innerSnap) => {
-        if(innerSnap.val()){
-          if(innerSnap.val().userId1 === this.state.user.uid){
-            db.ref(`users/${innerSnap.val().userId2}`).once('value', (innerSnap2) => {
-              console.log(innerSnap2.val());
-              this.setState({
-                otherusername: innerSnap2.val().username,
-                otherUserId: innerSnap2.val().uid
-
-              })
-            } )
-          }
-          else if (innerSnap.val().userId2 === this.state.user.uid){
-            db.ref(`users/${innerSnap.val().userId1}`).once('value', (innerSnap2) => {
-              this.setState({
-                otherusername: innerSnap2.val().username
-              })
-            })
-
-          }
-        }
-
-      });
-
-      this.setState({
-        connected: snap.val()
-      })
-      this.onChildAddedToChatRoom();
-
-      }
-    })
-  }
-
-  onChildAddedToChatRoom = () => {
-    console.log('running childfunc');
-    db.ref(`chatRoom/${this.state.connected}/posts`).on('child_added', (snap) => {
-      console.log(this.state.posts);
-        let newPosts = [...this.state.posts];
-        newPosts.push({
-          key: snap.key,
-          text: snap.val()
-        });
-        this.setState({
-          posts: newPosts
-        });
-
-    });
-    console.log(this.state.connected);
-  }
-
-  cancelSearch = () =>  {
-    this.removeUsersFromDb(this.state.user.uid);
-    this.setState({
-      loading:false,
-      showTrainingModule:true,
-      running:false,
-      yoga:false,
-      aerobics:false,
-      soccer:false,
-      dance:false,
-      biking:false,
-      hiking:false
-
-    });
-    console.log('canceling');
-  }
-
 
 //Runs when component has been mounted.
   componentDidMount(){
@@ -607,7 +486,7 @@ export default class Main extends Component {
   }
 
   render() {
-    const {user, username, postText, otherusername, posts, connected, errorMessage, signIn, register, loading, showTrainingModule} = this.state;
+    const {user, username, usernameIsEmpty, postText, otherusername, posts, connected, errorMessage, signIn, register, loading, showTrainingModule} = this.state;
 
 
     const renderPosts = [...posts].map((elem, index) => {
@@ -625,6 +504,7 @@ export default class Main extends Component {
 
         <Hero user= {user} register = {register} signIn = {signIn} signInClick = {this.showSignIn} registerClick={this.showRegister}/>
         {errorMessage && <p>{errorMessage}</p>}
+        {usernameIsEmpty && !username ? <p>Please enter a username</p>:null}
         <Register
           show = {this.state.register}
           onChange = {this.onChange}
@@ -634,7 +514,7 @@ export default class Main extends Component {
           stateName1 = {this.state.username}
           stateName2 = {this.state.password}
           stateName3 = {this.state.email}
-
+          signInWithGoogle = {this.signInWithGoogle}
           />
         <Login
           show = {this.state.signIn}
@@ -653,7 +533,7 @@ export default class Main extends Component {
       {connected && <Chatroom leaveChatOnClick = {this.leaveChatOnClick} renderPosts = {renderPosts}  onSubmit = {this.sendPostOnSubmit} onChange  = {this.onChange} postText={postText} name = {connected}/>}
 
       {loading && !connected ? <Loader onClick = {this.cancelSearch}/> : null}
-
+      <Footer/>
       </div>
     )
   }

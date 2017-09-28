@@ -15,6 +15,7 @@ const Register = (props) => {
       button1 = 'Register'
       onSubmit = {props.onSubmit}
       show = {props.show}
+      signInWithGoogle = {props.signInWithGoogle}
       cancelButton = {props.cancelButton}
       />
   );

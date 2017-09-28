@@ -4,9 +4,9 @@ const Chatroom = (props) => {
   return (
     <section className ="chat-room">
 
-     <form className="chat-form" onSubmit = {props.onSubmit}>
+     <form autocomplete="off" className="chat-form" onSubmit = {props.onSubmit}>
        <label>Message</label>
-       <input name="postText" onChange = {props.onChange} type = "text" value = {props.postText} />
+       <input autocomplete="off" name="postText" onChange = {props.onChange} type = "text" value = {props.postText} />
        <input className= "input-submit" type = "submit" value = "Send"/>
      </form>
      <section className="posts-section">
