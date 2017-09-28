@@ -122,27 +122,56 @@ export default class Main extends Component {
       }
   }
 
+  setUserInMatchObject = (stateName, dbName) => {
+    console.log(this.state.stateName);
+    stateName ? db.ref(`matchObjects/${dbName}/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
+  }
   setMatchObjects = () => {
+
+    this.setUserInMatchObject(this.state.running, 'running');
+    this.setUserInMatchObject(this.state.yoga, 'yoga');
+    this.setUserInMatchObject(this.state.aerobics, 'aerobics');
+    this.setUserInMatchObject(this.state.soccer, 'soccer');
+    this.setUserInMatchObject(this.state.dance, 'dance');
+    this.setUserInMatchObject(this.state.biking, 'biking');
+    this.setUserInMatchObject(this.state.hiking, 'hiking');
+
     //running
+
+    /*
+
     this.state.running ? db.ref(`matchObjects/running/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
     //yoga
     this.state.yoga ? db.ref(`matchObjects/yoga/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
     //Aerobics
     this.state.aerobics ? db.ref(`matchObjects/aerobics/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
+    this.state.soccer ? db.ref(`matchObjects/soccer/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
+    this.state.dance ? db.ref(`matchObjects/dance/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
+    this.state.biking ? db.ref(`matchObjects/biking/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
+    this.state.hiking ? db.ref(`matchObjects/hiking/${this.state.user.uid}`).set({userId: this.state.user.uid }) : null;
 
+
+    */
+
+
+
+  }
+
+  removeUser = (user1, user2, dbName) => {
+    db.ref(`matchObjects/${dbName}/${user1}`).remove();
+    db.ref(`matchObjects/${dbName}/${user2}`).remove();
   }
 
   removeUsersFromDb = (user1, user2) => {
       //delete running
-      db.ref(`matchObjects/running/${user1}`).remove();
-      db.ref(`matchObjects/running/${user2}`).remove();
-      //yoga
-      db.ref(`matchObjects/yoga/${user1}`).remove();
-      db.ref(`matchObjects/yoga/${user2}`).remove();
-      //aerobics
-      db.ref(`matchObjects/aerobics/${user1}`).remove();
-      db.ref(`matchObjects/aerobics/${user2}`).remove();
-      console.log('removing');
+      this.removeUser(user1,user2, 'running');
+      this.removeUser(user1,user2, 'yoga');
+      this.removeUser(user1,user2, 'aerobics');
+      this.removeUser(user1,user2, 'soccer');
+      this.removeUser(user1,user2, 'dance');
+      this.removeUser(user1,user2, 'biking');
+      this.removeUser(user1,user2, 'hiking');
+
   }
 
   createChatRoom = (fireRef, userId1, userId2) => {
@@ -175,6 +204,42 @@ export default class Main extends Component {
     this.removeUsersFromDb(userId1, userId2);
   }
 
+  //checks categoryobjects after own userid and other user id.
+  findOtherMatchObj = () => {
+
+    this.setOtherMatchIfOtherUserIsFound('running');
+    this.setOtherMatchIfOtherUserIsFound('yoga');
+    this.setOtherMatchIfOtherUserIsFound('aerobics');
+    this.setOtherMatchIfOtherUserIsFound('soccer');
+    this.setOtherMatchIfOtherUserIsFound('dance');
+    this.setOtherMatchIfOtherUserIsFound('biking');
+    this.setOtherMatchIfOtherUserIsFound('hiking');
+  }
+
+  setOtherMatchIfOtherUserIsFound = (stateName) => {
+
+      db.ref(`matchObjects/${stateName}`).orderByChild('userId')
+        .equalTo(this.state.user.uid)
+          .on('value', (snap) => {
+            if( snap.val() !== null ) {
+              db.ref(`matchObjects/${stateName}`).orderByChild('userId').once('value', (snap) => {
+                if(snap.val()!== null ){
+                  if(Object.keys(snap.val())[1] !== undefined  ){
+                    Object.keys(snap.val())[0] !== this.state.user.uid ?
+                    this.createChatRoom(
+                      `${stateName}`, this.state.user.uid, Object.keys(snap.val())[0])
+                        : this.createChatRoom(`${stateName}`, this.state.user.uid, Object.keys(snap.val())[1]);
+                  }else {
+                    console.log('själv');
+                  }
+                }
+              })
+            }
+    });
+  }
+
+
+  /*
   //checks categoryobjects after own userid and other user id.
   findOtherMatchObj = () => {
     this.findRunning()
@@ -255,6 +320,8 @@ export default class Main extends Component {
       }
     }) : console.log('slut');
   }
+  */
+
 
   sendPostOnSubmit = (e) => {
     e.preventDefault();
@@ -445,7 +512,14 @@ export default class Main extends Component {
       showTrainingModule:true,
       loading:false,
       posts:[],
-      otherusername:''
+      otherusername:'',
+      running:false,
+      yoga:false,
+      aerobics:false,
+      soccer:false,
+      dance:false,
+      biking:false,
+      hiking:false
     });
   }
 
@@ -511,7 +585,15 @@ export default class Main extends Component {
     this.removeUsersFromDb(this.state.user.uid);
     this.setState({
       loading:false,
-      showTrainingModule:true
+      showTrainingModule:true,
+      running:false,
+      yoga:false,
+      aerobics:false,
+      soccer:false,
+      dance:false,
+      biking:false,
+      hiking:false
+
     });
     console.log('canceling');
   }
@@ -528,9 +610,9 @@ export default class Main extends Component {
     const {user, username, postText, otherusername, posts, connected, errorMessage, signIn, register, loading, showTrainingModule} = this.state;
 
 
-    const renderPosts = [...posts].map((elem) => {
+    const renderPosts = [...posts].map((elem, index) => {
 
-    return <Postcard stateUsername = {this.state.username} elemKey = {elem.text.userId} myKey = {user.uid} postText = {elem.text.text} date = {elem.text.date} username = {username} otherusername = {otherusername} />
+    return <Postcard key = {index} stateUsername = {this.state.username} elemKey = {elem.text.userId} myKey = {user.uid} postText = {elem.text.text} date = {elem.text.date} username = {username} otherusername = {otherusername} />
     });
 
 
