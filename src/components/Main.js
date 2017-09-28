@@ -351,7 +351,6 @@ export default class Main extends Component {
           this.setState({
           errorMessage:error.message
         });
-      console.log(error);
     }):this.setState({
       usernameIsEmpty:true
     });
@@ -384,7 +383,6 @@ export default class Main extends Component {
       let chatVar;
 
       db.ref(`users/${user.uid}`).once('value', (snap) => {
-        console.log(snap.val().chatroom+'');
         chatVar = snap.val().chatroom;
 
       })
