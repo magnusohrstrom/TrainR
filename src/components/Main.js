@@ -353,8 +353,6 @@ export default class Main extends Component {
     signIn:false,
     loading:false
     })
-
-
   }
 
   signOut = (e) => {
@@ -377,7 +375,6 @@ export default class Main extends Component {
       errorMessage:false,
       loading: false,
       goSubmitIsEmpty:false,
-
 
       //Training forms
       running:false,
